@@ -1,0 +1,33 @@
+Open-Source Fixedpoint Model-Checker version 2014
+INPUT:
+   AMP_S.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  weak_auth
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2014
+STATISTICS:
+  TIME 163 ms
+  parseTime 1 ms
+  visitedNodes: 6 nodes
+  depth: 1 plies
+
+ATTACK TRACE:
+i -> (x401,1): {x402,x401,x207,x208}_(pk(x401))
+(x401,1) -> i: {x402,i,x401,ReqID(1),x207}_x208
+i -> (x401,1): {{x402,i,x310}_inv(pk(i))}_(pk(x401))
+(x401,1) -> i: {Data(2)}_x208
+
+
+% Reached State:
+% 
+% request(x401,x402,pRPCRequest,x310,1)
+% state_rRP(x401,2,inv(pk(x401)),pk(x401),pk(i),i,x208,x402,x207,{x402,x401,x207,x208}_(pk(x401)),ReqID(1),{x402,i,x401,ReqID(1),x207}_x208,x310,{x402,i,x310}_inv(pk(i)),{{x402,i,x310}_inv(pk(i))}_(pk(x401)),Data(2),{Data(2)}_x208,1)
+% witness(x401,x402,pCRPData,Data(2))
+% secrets(Data(2),secrecyset(x401,1,pData),i)
+% contains(secrecyset(x401,1,pData),x401)
+% contains(secrecyset(x401,1,pData),x402)
+% state_rC(x20,0,pk(x24),inv(pk(x20)),pk(x20),pk(x25),x24,x25,1)
+% state_rS(x26,0,pk(x401),inv(pk(x26)),pk(x26),x401,1)
+

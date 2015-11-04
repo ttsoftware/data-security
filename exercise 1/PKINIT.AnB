@@ -1,0 +1,95 @@
+Protocol: Kerberos_PKINIT
+
+Types: Agent C,ath,g,s;
+       Number N1,N2,T0,T1,T2,Payload,tag;
+       Function pk,sk,hash;
+       Symmetric_key KCG,KCS,Ktemp,skag,skgs
+
+Knowledge: C: C,ath,g,s,pk(ath),pk(C),inv(pk(C)),hash,tag,pk;
+	   ath: C,ath,g,pk(C),pk(ath),inv(pk(ath)),hash,skag,tag;
+	   g: ath,g,skag,skgs,hash,tag;
+	   s: g,s,skgs,hash,tag
+
+where C!=ath
+
+Actions:
+
+##
+#
+# C: the client
+# g:
+# s: the server C wants to contact
+# ath: trusted key authority
+#
+# pk: public key
+# inv(pk): private key
+# sk:
+# hash: hashing function
+#
+# skag: Symmetric key
+# skgs: Symmetric key
+#
+# N0...NN Nons for verification
+# T0...TN Nons for challenge
+##
+
+# C sends N1, T0 to ath, saying it wants to contact g
+C -> ath: C,g,N1,{T0,N1,hash(C,g,N1)}inv(pk(C))
+
+# ath sends 3 messages to C
+# "hi C"
+# 3 messages:
+#   1: <message encrypted with (skag)>
+#       The message contains KCG and T1
+#   2: <message encrypted with (Ktemp)>
+#       The message contains KCG, T1 and N1
+#       The message contains KCG and T1
+#   3: <message encrypted with (pk(C))>
+#       The message contains tag and Ktemp encrypted with inv(pk(ath)) - Ktemp is signed by ath
+ath -> C: C,
+	({|ath,C,g,KCG,T1|}skag),
+        ({|g,KCG,T1,N1|}Ktemp),
+        { tag,{Ktemp}inv(pk(ath))}pk(C)
+
+# C sends messages to g
+# "server s"
+# "N2"
+# 2 messages:
+#   1: <message encrypted with (skag)>
+#       The message contains KCG and T1
+#       (1st message from ath's response)
+#   2: <message encrypted with KCG>
+#       The message contains C, T1
+C -> g: s,N2,
+	({|ath,C,g,KCG,T1|}skag),
+	({|C,T1|}KCG)
+
+# g sends message to C
+# "hi C"
+# 2 messages:
+#   1: <message encrypted with skgs>
+#       The message contains C, s, KCS and T2
+#   2: <message encrypted with KCG>
+#       The message contains s, KCS, T2, N2
+g -> C: C,
+	({|C,s,KCS,T2|}skgs),
+	{|s,KCS,T2,N2|}KCG
+
+# C sends message to s
+# 2 messages:
+#   1: <message encrypted with skgs> (message send by g)
+#   2: <message encrypted with KCS>
+#       The message contains C, hash(T2)
+C -> s: ({|C,s,KCS,T2|}skgs),
+	{|C,hash(T2)|}KCS
+
+# s sends message to C
+# 2 messages:
+#   1: <message encrypted with KCS>
+#       The message contains hash(T2)
+#   2: <message encrypted with KCS>
+#       The message contains tag and Payload
+s -> C: ({|hash(T2)|}KCS), {|tag,Payload|}KCS
+
+Goals:
+s *->* C: Payload
