@@ -13,6 +13,9 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,shapes, shadows, arrows, automata}
 
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{graphicx}
@@ -28,11 +31,20 @@
 \setlength\parindent{0pt}
 \usepackage[parfill]{parskip}
 
+\definecolor{pblue}{rgb}{0.13,0.13,1}
+\definecolor{pgreen}{rgb}{0,0.5,0}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{pgrey}{rgb}{0.46,0.45,0.48}
 \definecolor{mygray}{rgb}{0.9451,0.9451,0.9451}
+
 \lstset{
   backgroundcolor=\color{mygray},
   basicstyle=\footnotesize\ttfamily,
   mathescape,
+  language=Java,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
   breaklines=true,
   numbers=left,
   numberstyle=\ttfamily,
@@ -49,8 +61,8 @@
 \title{
   \vspace{4cm}
   \begin{flushleft}
-  \Large{\textbf{Excercise 1}} \\
-  \large{Data Security}
+  \Large{\textbf{Excercise 2 - Java Authentication}} \\
+  \large{Data Security} \\
   \end{flushleft}
   \vspace{0cm}
   \begin{flushleft}
@@ -79,105 +91,63 @@
 
 \pagenumbering{arabic}
 
-\section{Kerberos PKInit}
+\section{Introduction}
+\label{sec:Introduction}
 
-\subsection{Protocol description}
-\label{sub:Protocol description}
+\newpage
 
-The protocol describes how $C$ authenticates with- and receives payload from the server $s$.
+\section{Authentication}
+\label{sec:Authentication}
 
-$C$ establishes a secure connection with $g$, by obtaining the symmetric keys $KCG$ and $Ktemp$ from $ath$. These two keys are only shared between $ath$ and $C$. $ath$ also sends the secret $\{|ath,C,g,KCG,T1|\}skag$ to $C$, which $C$ will use to verify that it got $KCG$ from $ath$. $C$ cannot read or modify this secret since it was encrypted using $skag$, which is only shared between $ath$ and $g$.
+\newpage
 
-$C$ can now talk to $g$, saying it wants to contact $s$, sending the $skag$-encrypted secret containing $KCG$ and $\{|C,T1|\}KCG$ which is used to verify $C$ and the nons $T1$ from $ath$.
+\section{Design and implementation}
+\label{sec:Design and implementation}
 
-If the information supplied by $C$ is correct, $g$ responds with the secret $\{|C,s,KCS,T2|\}skgs$ which only $g$ and $s$ can read since it is encrypted using their shared symmetric key $skgs$.
-$g$ also sends $\{|s,KCS,T2,N2|\}KCG$, giving $C$ the symmetric key $KCS$ which is only shared between $C$ and $s$.
+My implementation is based on the following understanding of the problem.
 
-$C$ can now contact $s$ by sending $KCS$ encrypted with $skgs$ and it's own identifier together with $g$'s $T2$ nons encrypted using $KCS$.
+\begin{enumerate}
+    \item Implement a RMI server, exposing the interface shown in Figure~\ref{fig:service-interface} to the client.
+    \item Authenticate users on the server before allowing them to use the RMI service.
+    \begin{itemize}
+        \item The server assumes users already exist and do not handle creation of new users.
+        \item The implementation of this authentication should include a secure user password storage.
+    \end{itemize}
+\end{enumerate}
 
-$s$ responds with the payload encrypted with $KCS$.
+\begin{figure}[h!]
+    \begin{lstlisting}
+    package service;
 
-The protocol prevents illegitimate access by relying on the shared symmetric keys $skag$ and $skgs$ and the nons $T1$ and $T2$ to verify the requests sent between the different agents.
+    import service.model.PrintJobQueue;
+    import java.rmi.Remote;
 
-\subsection{Attack}
-\label{sub:Attack}
-In the protocol $PKINIT-short$ there is a man-in-the-middle-attack present in which the attacker $i$ obtains the initial authentication request between $C$ and $ath$ and subsequently authenticates on behalf of $C$, controlling all communication between $C$ and $g$.
+    public interface PrintService extends Remote {
 
-This is possible since the initial request from $C$ to $ath$ is encrypted using $C$'s private key, which means everyone can read it since everyone has access to $C$'s public key. As such $i$ can easily decrypt the message and replace it's contents with it's own nons and private key encryption.
+        void print(String filename, String printer);
+        PrintJobQueue queue();
+        void topQueue(int jobId);
+        void start();
+        void stop();
+        void restart();
+        String status();
+        String readConfig(String parameter);
+        void setConfig(String parameter, String value);
+    }
+    \end{lstlisting}
+    \label{fig:service-interface}
+    \caption{The interface exposed through RMI.}
+\end{figure}
 
-We can easily fix this, by encrypting the entire message send by $C$ using $ath$'s public key. This way $i$ will never be able decrypt the message, and subsequently fake the identity of $C$.
-$C -> ath: \{C,g,N1,\{T0,N1,hash(C,g,N1)\}inv(pk(C))\}pk(ath)$
+\newpage
 
-\subsection{Diffie-Hellman}
-\label{sub:Diffie-Hellman}
+\section{Evaluation}
+\label{sec:Evaluation}
 
-In the following version of PKINIT we introduce the new shared prime $p$, and add $exp(p, X)$ to the initial request from $C$ to $ath$. $ath$ responds with $exp(p, Y)$ and encrypts $\{|g,KCG,T1,N1|\}$ with $exp(exp(p, Y), X))$ instead of $Ktemp$.\\
+\newpage
 
-\begin{lstlisting}
-Types: Agent C,ath,g,s;
-   Number p,N1,N2,T0,T1,T2,Payload,tag;
-   Function pk,hash,sk;
-   Symmetric_key KCG,KCS,skag,skgs
+\section{Conclusion}
+\label{sec:Conclusion}
 
-Knowledge: C: C,ath,g,s,p,pk(ath),pk(C),inv(pk(C)),hash,tag,pk;
-   ath: C,ath,g,p,pk(C),pk(ath),inv(pk(ath)),hash,skag,tag
-
-where C!=ath
-
-Actions:
-
-C -> ath: {C,g,N1,{T0,N1,hash(C,g,N1)}inv(pk(C)),exp(p, X)}pk(ath)
-
-ath -> C: C,
-	({|ath,C,g,KCG,T1|}skag),
-        (exp(p, Y)),
-        ({|g,KCG,T1,N1|}exp(exp(p, Y), X))
-
-Goals:
-KCG secret between C,ath
-\end{lstlisting}
-
-\section{AMP}
-\label{sec:AMP}
-
-\subsection{Protocol description}
-\label{sub:Protocol description}
-
-$C$ knows about $s$ and $RP$ while $s$ only knows of $C$ and $RP$ only knows of $s$. They also know about each others public keys in the same manner.
-
-The protocol tries to establish a relationship between C and RP, authenticating the two parties through $s$, enabling $RP$ to share $data$ with $C$.
-
-The protocol tries to authenticate $C$ for $RP$, by letting $s$ validate the initial $Request$ and the $ReqID$ sent by $RP$.
-
-\subsection{Attack analysis and fix}
-\label{sub:Attack analysis and fix}
-
-$i$ acts a man in the middle between $C$ and $RP$. $i$ receives a request from $C$, but forwards it to $RP$ imitating $C$. $i$ is able to authenticate on behalf of $C$ and retrieve $data$ which is a secret between $C$ and $RP$.
-
-To fix the problem we sign the $Request$ with $C$'s private key. We can do this since $RP$ does not know $C$'s public key.
-We also give $RP$'s public key to $s$, such that $s$'s can sign the message to $RP$ after successful authentication.
-
-Now the $Request$ variable generated by $C$ is guaranteed to be unique throughout the protocol, preventing $i$ from spoofing $RP$.\\
-
-\begin{lstlisting}
-# We sign with C's private key, since RP does not know C's public key
-C->RP: {C,RP,{Request}inv(pk(C)),K}pk(RP)
-RP->C: {C,s,RP,ReqID,{Request}inv(pk(C))}K
-
-# We give s RP's public key, such that s can encrypt its response, such that only RP can read it.
-C->s:  { {C,s,pk(RP),ReqID,Request}inv(pk(C)) }pk(s)
-s->C:  { {C,s,Request}inv(pk(s)) }pk(RP)
-
-# Now Request is gauranteed to be unique for the whole request chain.
-C->RP: {{C,s,Request}inv(pk(s))}pk(RP)
-RP->C: {Data}K
-\end{lstlisting}
-
-\subsection{S as a dishonest server}
-\label{sub:S as a dishonest server}
-
-If the server is allowed to be dishonest, then we essentially do not need an authority for authentication. Any authority we might choose in the place of $S$, cannot be trusted to be honest, and thus we cannot use $S$ to validate our recipient.
-
-There is simply no reason to use an untrusted third party to authenticate between to agents.
 
 \end{document}
