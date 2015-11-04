@@ -1,0 +1,153 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, hmargin={2.5cm, 2.5cm}, vmargin={2.5cm, 2.5cm}]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes, shadows, arrows, automata}
+
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage[english]{varioref}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{etoolbox}
+
+\usepackage{fancyhdr}
+
+\setlength\parindent{0pt}
+\usepackage[parfill]{parskip}
+
+\definecolor{pblue}{rgb}{0.13,0.13,1}
+\definecolor{pgreen}{rgb}{0,0.5,0}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{pgrey}{rgb}{0.46,0.45,0.48}
+\definecolor{mygray}{rgb}{0.9451,0.9451,0.9451}
+
+\lstset{
+  backgroundcolor=\color{mygray},
+  basicstyle=\footnotesize\ttfamily,
+  mathescape,
+  language=Java,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
+  breaklines=true,
+  numbers=left,
+  numberstyle=\ttfamily,
+  stepnumber=1,
+  firstnumber=1,
+  numberfirstline=true,
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+  literate={->}{$\rightarrow$}{2}
+           {ε}{$\varepsilon$}{1}
+}
+
+\linespread{1.3}
+
+\title{
+  \vspace{4cm}
+  \begin{flushleft}
+  \Large{\textbf{Excercise 2 - Java Authentication}} \\
+  \large{Data Security} \\
+  \end{flushleft}
+  \vspace{0cm}
+  \begin{flushleft}
+  \small
+  \textit{\today}
+  \end{flushleft}
+  \vspace{12cm}
+  \begin{flushleft}
+  \small
+  Troels Thomsen \texttt{152165}
+  \end{flushleft}
+}
+
+\date{
+	%
+}
+
+\begin{document}
+
+\clearpage
+\pagenumbering{gobble}
+\thispagestyle{empty}
+\maketitle
+
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Introduction}
+\label{sec:Introduction}
+
+\newpage
+
+\section{Authentication}
+\label{sec:Authentication}
+
+\newpage
+
+\section{Design and implementation}
+\label{sec:Design and implementation}
+
+My implementation is based on the following understanding of the problem.
+
+\begin{enumerate}
+    \item Implement a RMI server, exposing the interface shown in Figure~\ref{fig:service-interface} to the client.
+    \item Authenticate users on the server before allowing them to use the RMI service.
+    \begin{itemize}
+        \item The server assumes users already exist and do not handle creation of new users.
+        \item The implementation of this authentication should include a secure user password storage.
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[h!]
+    \begin{lstlisting}
+    package service;
+
+    import service.model.PrintJobQueue;
+    import java.rmi.Remote;
+
+    public interface PrintService extends Remote {
+
+        void print(String filename, String printer);
+        PrintJobQueue queue();
+        void topQueue(int jobId);
+        void start();
+        void stop();
+        void restart();
+        String status();
+        String readConfig(String parameter);
+        void setConfig(String parameter, String value);
+    }
+    \end{lstlisting}
+    \label{fig:service-interface}
+    \caption{The interface exposed through RMI.}
+\end{figure}
+
+\newpage
+
+\section{Evaluation}
+\label{sec:Evaluation}
+
+\newpage
+
+\section{Conclusion}
+\label{sec:Conclusion}
+
+
+\end{document}

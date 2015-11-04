@@ -1,0 +1,10 @@
+ofmc
+ofmc/*
+AnB-sublime-highlighting
+AnB-sublime-highlighting/*
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf

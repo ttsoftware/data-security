@@ -1,0 +1,44 @@
+Open-Source Fixedpoint Model-Checker version 2014
+Verified for 1 sessions
+INPUT:
+   AMP.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  weak_auth
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2014
+STATISTICS:
+  TIME 1184 ms
+  parseTime 0 ms
+  visitedNodes: 929 nodes
+  depth: 5 plies
+
+ATTACK TRACE:
+(x802,1) -> i: {x802,i,Request(1),K(1)}_(pk(i))
+i -> (x801,1): {x802,x801,x306,x307}_(pk(x801))
+(x801,1) -> i: {x802,s,x801,ReqID(2),x306}_x307
+i -> (x802,1): {x802,s,i,x506,Request(1)}_K(1)
+(x802,1) -> i: {{x802,s,i,x506,Request(1)}_inv(pk(x802))}_(pk(s))
+i -> (s,1): {{x802,s,i,x506,Request(1)}_inv(pk(x802))}_(pk(s))
+(s,1) -> i: {{x802,s}_inv(pk(s))}_(pk(x802))
+i -> (x802,1): {{x802,s}_inv(pk(s))}_(pk(x802))
+(x802,1) -> i: {{x802,s}_inv(pk(s))}_(pk(i))
+i -> (x801,1): {{x802,s}_inv(pk(s))}_(pk(x801))
+(x801,1) -> i: {Data(6)}_x307
+
+
+% Reached State:
+%
+% request(x801,x802,pRPCRequest,x306,1)
+% state_rRP(x801,2,inv(pk(x801)),pk(x801),pk(s),s,x307,x306,x802,{x802,x801,x306,x307}_(pk(x801)),ReqID(2),{x802,s,x801,ReqID(2),x306}_x307,{x802,s}_inv(pk(s)),{{x802,s}_inv(pk(s))}_(pk(x801)),Data(6),{Data(6)}_x307,1)
+% witness(x801,x802,pCRPData,Data(6))
+% secrets(Data(6),secrecyset(x801,1,pData),i)
+% contains(secrecyset(x801,1,pData),x801)
+% contains(secrecyset(x801,1,pData),x802)
+% state_rs(s,1,pk(x802),inv(pk(s)),pk(s),x802,Request(1),x506,i,{x802,s,i,x506,Request(1)}_inv(pk(x802)),{{x802,s,i,x506,Request(1)}_inv(pk(x802))}_(pk(s)),{{x802,s}_inv(pk(s))}_(pk(x802)),1)
+% state_rC(x802,3,pk(i),inv(pk(x802)),pk(x802),pk(s),i,s,Request(1),K(1),inv(K(1)),{x802,i,Request(1),K(1)}_(pk(i)),x506,{x802,s,i,x506,Request(1)}_K(1),{{x802,s,i,x506,Request(1)}_inv(pk(x802))}_(pk(s)),{x802,s}_inv(pk(s)),{{x802,s}_inv(pk(s))}_(pk(x802)),{{x802,s}_inv(pk(s))}_(pk(i)),1)
+% state_rC(x28,0,pk(x801),inv(pk(x28)),pk(x28),pk(s),x801,s,2)
+% state_rRP(x32,0,inv(pk(x32)),pk(x32),pk(s),s,2)
+% state_rs(s,0,pk(x31),inv(pk(s)),pk(s),x31,2)
+% witness(x802,i,pRPCRequest,Request(1))

@@ -1,0 +1,28 @@
+Protocol: AMP
+
+Types: Agent C,S,RP;
+       Number Request,ReqID,Data;
+       PublicKey K
+
+Knowledge:
+       C: C,S,RP,pk(S),pk(C),inv(pk(C)),pk(RP);
+       S: C,S,pk(S),inv(pk(S)),pk(C);
+       RP: S,RP,pk(S),pk(RP),inv(pk(RP))
+       where RP!=S
+
+Actions:
+
+C->RP: {C,RP,{Request}inv(pk(C)),K}pk(RP)
+RP->C: {C,S,RP,ReqID,{Request}inv(pk(C))}K
+
+C->S:  { {C,S,pk(RP),ReqID,Request}inv(pk(C)) }pk(S)
+S->C:  { {C,S,Request}inv(pk(S)) }pk(RP)
+
+C->RP: {{C,S,Request}inv(pk(S))}pk(RP)
+RP->C: {Data}K
+
+Goals:
+
+RP authenticates C on Request
+C authenticates RP on Data
+Data secret between RP,C
