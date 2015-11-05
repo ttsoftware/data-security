@@ -13,7 +13,7 @@ import java.util.Random;
 public class HashingService {
 
     private static HashingService instance;
-    private final static int ITERATION_NUMBER = 1000;
+    private final static int ITERATION_NUMBER = 10000;  // hashing rounds
 
     public static synchronized HashingService getInstance() {
         if (instance == null) {
@@ -23,14 +23,14 @@ public class HashingService {
     }
 
     public Pair<String, String> hash(String password) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        // Salt generation 64 bits long
         byte[] salt = new byte[8];
         new Random().nextBytes(salt);
         return hash(password, salt);
     }
 
     public Pair<String, String> hash(String password, byte[] salt) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        // Salt generation 64 bits long
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        MessageDigest digest = MessageDigest.getInstance("SHA-512");
         digest.reset();
         digest.update(salt);
         byte[] input = digest.digest(password.getBytes("UTF-8"));
