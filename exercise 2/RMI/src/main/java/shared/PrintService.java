@@ -1,6 +1,6 @@
 package shared;
 
-import model.User;
+import shared.model.User;
 
 import javax.security.auth.login.LoginException;
 import java.rmi.Remote;

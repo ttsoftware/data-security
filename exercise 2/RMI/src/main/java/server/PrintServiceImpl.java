@@ -3,7 +3,7 @@ package server;
 import shared.PrintService;
 import shared.PrintJob;
 import shared.PrintJobQueue;
-import model.User;
+import shared.model.User;
 
 import javax.security.auth.login.LoginException;
 import java.rmi.AlreadyBoundException;

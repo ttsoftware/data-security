@@ -1,7 +1,7 @@
 package server;
 
 import javafx.util.Pair;
-import model.User;
+import shared.model.User;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;

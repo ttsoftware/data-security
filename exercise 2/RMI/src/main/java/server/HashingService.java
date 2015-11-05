@@ -33,15 +33,15 @@ public class HashingService {
         MessageDigest digest = MessageDigest.getInstance("SHA-512");
         digest.reset();
         digest.update(salt);
-        byte[] input = digest.digest(password.getBytes("UTF-8"));
+        byte[] digestedPassword = digest.digest(password.getBytes("UTF-8"));
 
         for (int i = 0; i < ITERATION_NUMBER; i++) {
             digest.reset();
-            input = digest.digest(input);
+            digestedPassword = digest.digest(digestedPassword);
         }
 
         // Returns the hashed password and the salt
-        return new Pair<String, String>(byteToBase64(input), byteToBase64(salt));
+        return new Pair<String, String>(byteToBase64(digestedPassword), byteToBase64(salt));
     }
 
     /**

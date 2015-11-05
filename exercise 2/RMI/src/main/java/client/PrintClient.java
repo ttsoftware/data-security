@@ -1,6 +1,6 @@
 package client;
 
-import model.User;
+import shared.model.User;
 import shared.PrintJob;
 import shared.PrintService;
 
