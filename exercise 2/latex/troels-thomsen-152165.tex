@@ -107,8 +107,10 @@ This encryption layer, usually Transport Layer Security (TLS) or its predecessor
 
 Given that anyone can establish a secure connection with the server puts a great deal of pressure on the servers ability to secure its stored user credentials, since they solely act a the sole method of user authentication and are practically the users private keys. Secure storage of passwords remains an industry-wide problem, with many services having exposed their users passwords to attackers in some way or another in recent years.
 
-In the given scenario we need to authenticate a user with a printing service, allowing them to print files to networked printers controlled by the service. The proposed solution will try to solve the problem of authenticating users while securely storing their credentials. It will assume that all users already exist in the system.
-The solution expects the user credentials to be sent over a secure network, and does not try to solve the problem of securely transporting user credentials from the client to the server.
+In the given scenario we need to authenticate a user with a printing service, allowing them to print files to networked printers controlled by the service. The proposed solution will try to solve the problem of authenticating users while securely storing their credentials. It will try to achieve this by storing the passwords in a hashed form using the SHA-512\footnote{\url{https://en.wikipedia.org/wiki/SHA-2}} hashing algorithm with a random 64-bit salt and 10000 hashing rounds.
+
+The solution will assume that all users already exist in the system.
+The solution does not try to solve the problem of securely transporting user credentials from the client to the server, and therefore expects the network to be secure.
 
 \newpage
 
@@ -117,12 +119,33 @@ The solution expects the user credentials to be sent over a secure network, and 
 
 \textit{This section should provide a short introduction to the specific problem of password based authentication in client/server systems and analyse the problems relating to password storage (on the server), password transport (between client and server) and password verification.}
 
+\subsection{Password transport}
+\label{sub:Password transport}
+
+\textit{An analysis of the password transport problem must include a discussion of how to implement both individual request authentication and authenticated sessions, where the initial authentication is used to define an authenticated session (e.g. a channel in BAN-logic) that implicitly authenticates messages exchanged. If authentication of invocation requires transfer of any additional parameters between client and server, these should simply be added to the interface defined above.}
+
+\subsection{Password storage}
+\label{sub:Password storage}
+
+\begin{itemize}
+    \item System password file - where the operating system/file system protection mechanisms are used to ensure confidentiality and integrity of the stored data
+    \item Public password file - passwords stored in a "public" file, where cryptography is used to ensure confidentiality and integrity of the stored data
+    \item Database - passwords stored in a data base management system, where the protection mechanism provided by the dbms is used to ensure the confidentiality and integrity of the stored data
+\end{itemize}
+
+\subsection{Password verification}
+\label{sub:Password verification}
+
+\textit{The password verification mechanism depends on the choice of password storage and must be explained in the report}
 \newpage
 
 \section{Design and implementation (3 pages)}
 \label{sec:Design and implementation}
 
 \textit{A software design for the proposed solution must be presented and explained, i.e. why is this particular design chosen. The implementation of the designed authentcation mechanism in the client server application must also be outlined in this section.}
+
+\textit{The password verification mechanism depends on the choice of password storage and must be explained in the report.
+For the purpose of this lab, it is acceptable to assume that communication between client and server is ensured by other means. It must, however, be explicitly stated if this assumption is made and the specific guarantees required by the channel (e.g. confidentiality, integrity and/or availability) must be specified}
 
 My implementation is based on the following understanding of the problem.
 

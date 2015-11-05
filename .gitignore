@@ -8,4 +8,6 @@ AnB-sublime-highlighting/*
 *.log
 *.out
 *.pdf
+*.toc
+*.class
 printservice.db
