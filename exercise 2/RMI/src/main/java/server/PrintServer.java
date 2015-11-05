@@ -58,8 +58,8 @@ public class PrintServer implements Runnable {
             String sql = "CREATE TABLE IF NOT EXISTS Users " +
                     "(id INTEGER PRIMARY KEY," +
                     " username VARCHAR(50) UNIQUE NOT NULL, " +
-                    " password VARCHAR(256) NOT NULL, " +
-                    " salt VARCHAR(256) NOT NULL)";
+                    " password VARCHAR(64) NOT NULL, " +
+                    " salt VARCHAR(8) NOT NULL)";
             stmt.executeUpdate(sql);
 
             sql = "INSERT OR IGNORE INTO Users (username, password, salt) " +

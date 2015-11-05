@@ -72,7 +72,8 @@
   \vspace{12cm}
   \begin{flushleft}
   \small
-  Troels Thomsen \texttt{152165}
+  By Troels Thomsen \texttt{152165}\\
+  Discussed with Rasmus Haarslev \texttt{152175}
   \end{flushleft}
 }
 
@@ -96,17 +97,32 @@
 \pagenumbering{arabic}
 
 \section{Introduction}
-\label{sec:Introduction}
+\label{sec:Introduction (1 page)}
+
+\textit{The introduction should provide a general introduction to the problem of authentication in client/server applications. It should define the scope of the answer, i.e. explicitly state what problems are considered, and outline the proposed solution. Finally, it should clearly state which of the identified goals are met by the developed software.}
+
+The problem of authentication between server and client is one which is still being solve with many open solutions. The problem lies in the fact that the client needs to authenticate the server, and the server needs to authenticate the client in order to prevent man-in-the-middle attacks. For systems which require a user to sign in with a key, usually in the form of a password, the most common approach to solving the problem is adding an encryption layer on top of the key authentication.
+
+This encryption layer, usually Transport Layer Security (TLS) or its predecessor Secure Sockets Layer (SSL), ensures privacy by encrypting data with a symmetric key which is agreed upon at the beginning of the sessions. This also ensures authenticity of the server, since the servers public key certificate is used to ensure its authenticity. In the ideal scenario the client will also share its public key certificate with the server, allowing the server to validate the authenticity of the client, however in the real world this is not practical since very few people have a personal private / public key pair. This is also the reason why most systemts have the added login with a username and password in the first place, since they cannot authenticate the users otherwise.
+
+Given that anyone can establish a secure connection with the server puts a great deal of pressure on the servers ability to secure its stored user credentials, since they solely act a the sole method of user authentication and are practically the users private keys. Secure storage of passwords remains an industry-wide problem, with many services having exposed their users passwords to attackers in some way or another in recent years.
+
+In the given scenario we need to authenticate a user with a printing service, allowing them to print files to networked printers controlled by the service. The proposed solution will try to solve the problem of authenticating users while securely storing their credentials. It will assume that all users already exist in the system.
+The solution expects the user credentials to be sent over a secure network, and does not try to solve the problem of securely transporting user credentials from the client to the server.
 
 \newpage
 
-\section{Authentication}
+\section{Authentication (3 pages)}
 \label{sec:Authentication}
 
+\textit{This section should provide a short introduction to the specific problem of password based authentication in client/server systems and analyse the problems relating to password storage (on the server), password transport (between client and server) and password verification.}
+
 \newpage
 
-\section{Design and implementation}
+\section{Design and implementation (3 pages)}
 \label{sec:Design and implementation}
+
+\textit{A software design for the proposed solution must be presented and explained, i.e. why is this particular design chosen. The implementation of the designed authentcation mechanism in the client server application must also be outlined in this section.}
 
 My implementation is based on the following understanding of the problem.
 
@@ -119,28 +135,32 @@ My implementation is based on the following understanding of the problem.
     \end{itemize}
 \end{enumerate}
 
-The implementation of SHA-256 hashing with salts was taken from \url{https://www.owasp.org/index.php/Hashing_Java}
+The implementation of SHA-512 hashing with salts was taken from \url{https://www.owasp.org/index.php/Hashing_Java}
 
 \newpage
 
-\section{Evaluation}
+\section{Evaluation (2 pages)}
 \label{sec:Evaluation}
 
+\textit{This section should document that the requirements defined in Section 2 have been satified by the implementation. In particular, the evaluation should demonstrate that the user is always authenticated by the server before the service is invoked, e.g. the username and methodname may be written to a logfile every time a service is invoked.
+The evaluation should provide a simple summary of which of the requirements are satisfied and which are not.}
+
 \newpage
 
-\section{Conclusion}
+\section{Conclusion (1 page)}
 \label{sec:Conclusion}
 
-\newpage
+\textit{The conclusions should summarize the problems addressed in the report and clearly identify which of the requirements are satisfied and which are not (a summary of Section 4). The conclusions may also include a brief outline of future work.}
 
-\appendix
+%\newpage
+%\appendix
 
-\section{Code}
-\label{sec:Code}
+%\section{Code}
+%\label{sec:Code}
 
-\subsection{PrintService.java}
-\label{sub:PrintService.java}
+%\subsection{PrintService.java}
+%\label{sub:PrintService.java}
 
-\lstinputlisting[label={appendix:service-interface}]{../RMI/src/main/java/shared/PrintService.java}
+%\lstinputlisting[label={appendix:service-interface}]{../RMI/src/main/java/shared/PrintService.java}
 
 \end{document}

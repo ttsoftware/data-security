@@ -13,7 +13,13 @@ public class IntegrationTest {
         // remove the database file
 
         Path databasePath = FileSystems.getDefault().getPath("printservice.db");
-        Files.delete(databasePath);
+
+        try {
+            Files.delete(databasePath);
+        }
+        catch (NoSuchFileException e) {
+            // The database is going to be created
+        }
 
         // run both server and client at the same time
 
