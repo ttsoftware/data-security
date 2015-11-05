@@ -2,9 +2,7 @@ package server;
 
 import javafx.util.Pair;
 import model.User;
-import shared.HashingService;
 
-import javax.security.auth.login.LoginException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -16,15 +14,27 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class PrintServer {
+public class PrintServer implements Runnable {
 
-    public static void main(String[] args) throws RemoteException, AlreadyBoundException, LoginException {
+    public void run() {
         initializeDatabase();
 
-        Registry registry = LocateRegistry.createRegistry(30000);
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.createRegistry(30000);
 
-        // create the service and perform the initial start-up
-        registry.bind("printserver", new PrintServiceImpl("printserver", registry));
+            // create the service and perform the initial start-up
+            registry.bind("printserver", new PrintServiceImpl("printserver", registry));
+        }
+        catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (AlreadyBoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        new PrintServer().run();
     }
 
     /**

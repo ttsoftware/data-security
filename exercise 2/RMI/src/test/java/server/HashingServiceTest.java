@@ -1,7 +1,10 @@
-package shared;
+package server;
 
 import javafx.util.Pair;
 import org.junit.Test;
+import server.HashingService;
+
+import static org.junit.Assert.*;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -16,5 +19,7 @@ public class HashingServiceTest {
 
         System.out.println(hash.getKey());
         System.out.println(hash.getValue());
+
+        assertNotEquals(password, hash.getKey());
     }
 }

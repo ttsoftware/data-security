@@ -1,4 +1,4 @@
-package shared;
+package server;
 
 import javafx.util.Pair;
 import sun.misc.BASE64Decoder;
