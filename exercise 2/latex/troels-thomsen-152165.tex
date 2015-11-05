@@ -89,6 +89,10 @@
 
 \newpage
 
+\tableofcontents
+
+\newpage
+
 \pagenumbering{arabic}
 
 \section{Introduction}
@@ -107,7 +111,7 @@
 My implementation is based on the following understanding of the problem.
 
 \begin{enumerate}
-    \item Implement a RMI server, exposing the interface shown in Figure~\ref{fig:service-interface} to the client.
+    \item Implement a RMI server, exposing the interface shown in Appendix~\ref{appendix:service-interface} to the client.
     \item Authenticate users on the server before allowing them to use the RMI service.
     \begin{itemize}
         \item The server assumes users already exist and do not handle creation of new users.
@@ -115,29 +119,7 @@ My implementation is based on the following understanding of the problem.
     \end{itemize}
 \end{enumerate}
 
-\begin{figure}[h!]
-    \begin{lstlisting}
-    package service;
-
-    import service.model.PrintJobQueue;
-    import java.rmi.Remote;
-
-    public interface PrintService extends Remote {
-
-        void print(String filename, String printer);
-        PrintJobQueue queue();
-        void topQueue(int jobId);
-        void start();
-        void stop();
-        void restart();
-        String status();
-        String readConfig(String parameter);
-        void setConfig(String parameter, String value);
-    }
-    \end{lstlisting}
-    \label{fig:service-interface}
-    \caption{The interface exposed through RMI.}
-\end{figure}
+The implementation of SHA-256 hashing with salts was taken from \url{https://www.owasp.org/index.php/Hashing_Java}
 
 \newpage
 
@@ -149,5 +131,16 @@ My implementation is based on the following understanding of the problem.
 \section{Conclusion}
 \label{sec:Conclusion}
 
+\newpage
+
+\appendix
+
+\section{Code}
+\label{sec:Code}
+
+\subsection{PrintService.java}
+\label{sub:PrintService.java}
+
+\lstinputlisting[label={appendix:service-interface}]{../RMI/src/main/java/shared/PrintService.java}
 
 \end{document}

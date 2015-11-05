@@ -24,9 +24,13 @@ public class PrintServer {
         Registry registry = LocateRegistry.createRegistry(30000);
 
         // create the service and perform the initial start-up
-        registry.bind("printserver", new PrintServant("printserver", registry));
+        registry.bind("printserver", new PrintServiceImpl("printserver", registry));
     }
 
+    /**
+     * Creates the base user admin in the database
+     * Thus is purely for proof of concept
+     */
     private static void initializeDatabase() {
 
         try {

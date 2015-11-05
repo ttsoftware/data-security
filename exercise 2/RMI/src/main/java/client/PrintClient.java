@@ -21,14 +21,13 @@ public class PrintClient {
 
         PrintService printService = (PrintService) Naming.lookup("rmi://localhost:30000/printserver");
 
-        User user = new User("admin", "password");
+        User user = new User("admin", "test");
 
-        printService.login(user);
-        printService.print("first.txt", "printer1");
-        printService.print("second.txt", "printer1");
-        printService.print("third.txt", "printer2");
+        printService.print("first.txt", "printer1", user);
+        printService.print("second.txt", "printer1", user);
+        printService.print("third.txt", "printer2", user);
 
-        HashMap<Integer, PrintJob> queue = printService.queue();
+        HashMap<Integer, PrintJob> queue = printService.queue(user);
 
         for (Map.Entry<Integer, PrintJob> job : queue.entrySet()) {
             System.out.println(Integer.toString(job.getKey()) + " : " + job.getValue().getPrinter() + " : " + job.getValue().getFilename());
