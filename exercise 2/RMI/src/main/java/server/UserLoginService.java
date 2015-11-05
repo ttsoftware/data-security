@@ -45,10 +45,10 @@ public class UserLoginService implements LoginService<User> {
                         HashingService.getInstance().base64ToByte(salt)
                 );
 
-                if (hash.getKey().equals(digest)) {
-                    return true;
+                if (!hash.getKey().equals(digest)) {
+                    throw new LoginException();
                 }
-                throw new LoginException();
+                return true;
             }
 
         } catch (ClassNotFoundException e) {
