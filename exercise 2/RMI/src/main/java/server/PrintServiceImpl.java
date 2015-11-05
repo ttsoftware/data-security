@@ -44,7 +44,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         if (UserLoginService.getInstance().login(user)) {
             return printQueue.getJobs();
         }
-        throw new LoginException();
+        throw new LoginException(); // necessary for compiler reasons
     }
 
     public void topQueue(int jobId, User user) throws LoginException {
@@ -97,14 +97,14 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         if (UserLoginService.getInstance().login(user)) {
             return null;
         }
-        throw new LoginException();
+        throw new LoginException(); // necessary for compiler reasons
     }
 
     public String readConfig(String parameter, User user) throws LoginException {
         if (UserLoginService.getInstance().login(user)) {
             return parameters.get(parameter);
         }
-        throw new LoginException();
+        throw new LoginException(); // necessary for compiler reasons
     }
 
     public void setConfig(String parameter, String value, User user) throws LoginException {
