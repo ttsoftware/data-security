@@ -124,6 +124,16 @@ The solution does not try to solve the problem of securely transporting user cre
 
 \textit{An analysis of the password transport problem must include a discussion of how to implement both individual request authentication and authenticated sessions, where the initial authentication is used to define an authenticated session (e.g. a channel in BAN-logic) that implicitly authenticates messages exchanged. If authentication of invocation requires transfer of any additional parameters between client and server, these should simply be added to the interface defined above.}
 
+When relying on a password-based authentication scheme, the system must take into account the problem of securely transporting the users passwords. The system must work under the assumption that the users are connecting through an insecure network. Given this assumption it is vital that the system can utilize a secure protocol for engaging in encryption of the users authentication request. This means that before the users can authenticate with the system, they must agree upon some sort of encryption scheme.
+
+When establishing a private session without any previously shared secret, we must first verify the origin of system with which the user is communicating. This is done by letting the server share a certificate which has been signed by one or more trusted third parties.
+After the initial verification of the server the two parties must agree upon a cipher an a key. There are many ways the parties might go about this.
+They could rely on a trusted third party to provide encryption keys given that both parties can securely communicate with this third party. This is a viable option but it does put a great deal of risk on the third party not being compromised, and it limits the possible users of the system to users who have knowledge of the trusted third party.
+
+The parties could have a previously shared key, but we will not consider this case further since it is only useful in a limited set of scenarios.
+
+The parties could also perform a variant of the Diffie–Hellman key exchange protocol, preferably one which authenticates the server and ensures forward secrecy like the Elliptic curve Diffie–Hellman protocol.\footnote{\url{https://en.wikipedia.org/wiki/Elliptic_curve_Diffie-Hellman}}
+
 \subsection{Password storage}
 \label{sub:Password storage}
 
@@ -142,10 +152,61 @@ The solution does not try to solve the problem of securely transporting user cre
 \section{Design and implementation (3 pages)}
 \label{sec:Design and implementation}
 
-\textit{A software design for the proposed solution must be presented and explained, i.e. why is this particular design chosen. The implementation of the designed authentcation mechanism in the client server application must also be outlined in this section.}
+\textit{A software design for the proposed solution must be presented and explained, i.e. why is this particular design chosen. The implementation of the designed authentication mechanism in the client server application must also be outlined in this section.}
 
 \textit{The password verification mechanism depends on the choice of password storage and must be explained in the report.
 For the purpose of this lab, it is acceptable to assume that communication between client and server is ensured by other means. It must, however, be explicitly stated if this assumption is made and the specific guarantees required by the channel (e.g. confidentiality, integrity and/or availability) must be specified}
+
+\subsection{Implementation choices}
+\label{sub:Implementation choicesn}
+
+
+The following implementation makes the assumption that the communication between the client and the server takes place on a secure network, and the implementation will therefore not try to solve the problem secure password transport.
+
+Since the implementation is not going to try to solve the problem of secure password transport, it will instead focus on solving the problem of secure user authentication and password storage.
+
+As a mechanism for storing user passwords we have chosen to use a SQL database, however we do not rely on the database's built-in password hashing. This is partly due to the fact that we have chosen a very simple setup with SQLite which do not have built-in functionality for hashing passwords like MySQL's \texttt{PASSWORD()} function. This has the added benefit of making the implementation portable between a virtually all SQL implementations with JDBC driver support. Another added benefit is that the developer of this implementation can make the choice of how they want the passwords to hashed since \texttt{java.security.MessageDigest} supports several cryptographic hashing functions, and the developer can further choose the salts and the number of hashing iterations used.
+
+The reason we chose to use a database for password storage over a system file or a public password file is again portability. The solution can easily be ported to other systems since it does not rely on operating-system or file-system specific functionality. Using a database has the added benefit of relieving the developer from worrying about efficient file-system usage and similar issues which might arise if one were to try to implement a password file mechanism for storing passwords.
+
+\subsection{Password hashing}
+\label{sub:Password hashing}
+
+The solution re-purposes the implementation of SHA-2 hashing with salts with the use of the \texttt{java.security} package found at \url{https://www.owasp.org/index.php/Hashing_Java}.
+
+By default, unless a different salt is specified, the implementation generates a random 64-bit salt and uses it on a 512-bit SHA-2 digest. The clear text password is then hashed using the generated digest in 10000 iterations of re-hashing.
+In order to be able to authenticate the user we need to store both the hash and the randomly generated salt.
+
+We add the 64-bit salt in order to try to avoid having any to passwords hash to the same 512-bit value, and thus avoid attacks exploiting the birthday paradox.
+
+By hashing over 10000 iterations we force any attacker to spend a factor of 10000 longer time when trying to break the hash. This adds to the time-cost for the system when generating hashes, but compared to the extra time added to the attackers procedure, the added iterations yields a good trade-off.
+
+\begin{figure}[h!]
+    \begin{lstlisting}
+public Pair<String, String> hash(String password) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    // Salt generation 64 bits long
+    byte[] salt = new byte[8];
+    new Random().nextBytes(salt);
+    return hash(password, salt);
+}
+
+public Pair<String, String> hash(String password, byte[] salt) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    MessageDigest digest = MessageDigest.getInstance("SHA-512");
+    digest.reset();
+    digest.update(salt);
+    byte[] digestedPassword = digest.digest(password.getBytes("UTF-8"));
+
+    for (int i = 0; i < ITERATION_NUMBER; i++) {
+        digest.reset();
+        digestedPassword = digest.digest(digestedPassword);
+    }
+
+    // Returns the hashed password and the salt
+    return new Pair<String, String>(byteToBase64(digestedPassword), byteToBase64(salt));
+}
+    \end{lstlisting}
+    \caption{The code which generates the 512-bit SHA-2 hash.}
+\end{figure}
 
 My implementation is based on the following understanding of the problem.
 
@@ -158,7 +219,6 @@ My implementation is based on the following understanding of the problem.
     \end{itemize}
 \end{enumerate}
 
-The implementation of SHA-512 hashing with salts was taken from \url{https://www.owasp.org/index.php/Hashing_Java}
 
 \newpage
 
