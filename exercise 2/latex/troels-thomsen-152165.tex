@@ -99,8 +99,6 @@
 \section{Introduction}
 \label{sec:Introduction (1 page)}
 
-\textit{The introduction should provide a general introduction to the problem of authentication in client/server applications. It should define the scope of the answer, i.e. explicitly state what problems are considered, and outline the proposed solution. Finally, it should clearly state which of the identified goals are met by the developed software.}
-
 The problem of authentication between server and client is one which is still being solve with many open solutions. The problem lies in the fact that the client needs to authenticate the server, and the server needs to authenticate the client in order to prevent man-in-the-middle attacks. For systems which require a user to sign in with a key, usually in the form of a password, the most common approach to solving the problem is adding an encryption layer on top of the key authentication.
 
 This encryption layer, usually Transport Layer Security (TLS) or its predecessor Secure Sockets Layer (SSL), ensures privacy by encrypting data with a symmetric key which is agreed upon at the beginning of the sessions. This also ensures authenticity of the server, since the servers public key certificate is used to ensure its authenticity. In the ideal scenario the client will also share its public key certificate with the server, allowing the server to validate the authenticity of the client, however in the real world this is not practical since very few people have a personal private / public key pair. This is also the reason why most systemts have the added login with a username and password in the first place, since they cannot authenticate the users otherwise.
@@ -114,15 +112,11 @@ The solution does not try to solve the problem of securely transporting user cre
 
 \newpage
 
-\section{Authentication (3 pages)}
+\section{Authentication}
 \label{sec:Authentication}
-
-\textit{This section should provide a short introduction to the specific problem of password based authentication in client/server systems and analyse the problems relating to password storage (on the server), password transport (between client and server) and password verification.}
 
 \subsection{Password transport}
 \label{sub:Password transport}
-
-\textit{An analysis of the password transport problem must include a discussion of how to implement both individual request authentication and authenticated sessions, where the initial authentication is used to define an authenticated session (e.g. a channel in BAN-logic) that implicitly authenticates messages exchanged. If authentication of invocation requires transfer of any additional parameters between client and server, these should simply be added to the interface defined above.}
 
 When relying on a password-based authentication scheme, the system must take into account the problem of securely transporting the users passwords. The system must work under the assumption that the users are connecting through an insecure network. Given this assumption it is vital that the system can utilize a secure protocol for engaging in encryption of the users authentication request. This means that before the users can authenticate with the system, they must agree upon some sort of encryption scheme.
 
@@ -134,28 +128,42 @@ The parties could have a previously shared key, but we will not consider this ca
 
 The parties could also perform a variant of the Diffie–Hellman key exchange protocol, preferably one which authenticates the server and ensures forward secrecy like the Elliptic curve Diffie–Hellman protocol.\footnote{\url{https://en.wikipedia.org/wiki/Elliptic_curve_Diffie-Hellman}}
 
+\newpage
+
 \subsection{Password storage}
 \label{sub:Password storage}
 
-\begin{itemize}
-    \item System password file - where the operating system/file system protection mechanisms are used to ensure confidentiality and integrity of the stored data
-    \item Public password file - passwords stored in a "public" file, where cryptography is used to ensure confidentiality and integrity of the stored data
-    \item Database - passwords stored in a data base management system, where the protection mechanism provided by the dbms is used to ensure the confidentiality and integrity of the stored data
-\end{itemize}
+We will consider the following three storage scenarios.
+
+\subsubsection{System password file}
+\label{subs:System password file}
+
+Storing the passwords in a file on the operating system has the added benefit of enabling the system to use the built-in permission and access system present in modern operating systems and file systems. This existing functionality could be utilized to confidentiality and integrity of the stored passwords.
+
+The downside to the approach is the added development cost to the system. One would most likely have to write a significant amount of code to create efficient I/O utilization when searching and inserting.
+Additionally this approach would be vulnerable to physical theft if only the existing access control functionality of the operating system was used without any encryption. If an attacker got hold of the harddrives, they would be able to gain access to all of the store passwords.
+
+\subsubsection{Public password file}
+\label{subs:Public password file}
+
+Storing passwords in an encrypted file on the server is a slightly better solution that using a system password file. It avoids the downside of being vulnerable to physical theft since all the data would be encrypted, but still suffers from an increase in implementation time since one would most likely have to develop a tailored system for managing this authentication structure.
+
+\subsubsection{Database storage}
+\label{subs:Database storage}
+
+The database system eliminates all of the downsides associated with the two other approaches. By using a well-established database provider, one can save the development cost incurred with the other solutions and still get an extremely efficient solution, which would most likely be better in every aspect than what could be tailored onto the system. By encrypting the private data stored in the database, the issue of physical or digital theft is also avoided.
+
+The only downside is that the encryption / hashing algorithm implemented by the database might not be entirely up to date. This can usually be circumvented quite easily by implementing the hashing yourself.
 
 \subsection{Password verification}
 \label{sub:Password verification}
 
-\textit{The password verification mechanism depends on the choice of password storage and must be explained in the report}
-\newpage
+Verifying submitted passwords using a database requires the system to retrieve the record corresponding to the given username, and comparing the stored hashed password with a hash of the submitted password. It is here crucial that the submitted password is hashed with the same salt and number of hashing rounds as the one stored in the database.
 
-\section{Design and implementation (3 pages)}
+If the two hashes are identical, we can consider the request to be valid.
+
+\section{Design and implementation}
 \label{sec:Design and implementation}
-
-\textit{A software design for the proposed solution must be presented and explained, i.e. why is this particular design chosen. The implementation of the designed authentication mechanism in the client server application must also be outlined in this section.}
-
-\textit{The password verification mechanism depends on the choice of password storage and must be explained in the report.
-For the purpose of this lab, it is acceptable to assume that communication between client and server is ensured by other means. It must, however, be explicitly stated if this assumption is made and the specific guarantees required by the channel (e.g. confidentiality, integrity and/or availability) must be specified}
 
 \subsection{Implementation choices}
 \label{sub:Implementation choicesn}
@@ -205,35 +213,76 @@ public Pair<String, String> hash(String password, byte[] salt) throws NoSuchAlgo
     return new Pair<String, String>(byteToBase64(digestedPassword), byteToBase64(salt));
 }
     \end{lstlisting}
-    \caption{The code which generates the 512-bit SHA-2 hash.}
+    \caption{Java code to generate the 512-bit SHA-2 hash.}
 \end{figure}
 
-My implementation is based on the following understanding of the problem.
+\subsection{User authentication}
+\label{sub:User authentication}
 
-\begin{enumerate}
-    \item Implement a RMI server, exposing the interface shown in Appendix~\ref{appendix:service-interface} to the client.
-    \item Authenticate users on the server before allowing them to use the RMI service.
-    \begin{itemize}
-        \item The server assumes users already exist and do not handle creation of new users.
-        \item The implementation of this authentication should include a secure user password storage.
-    \end{itemize}
-\end{enumerate}
+In order to authenticate the requests sent by the users, the service interface has been extended to include a user object containing a name and a password. This object is passed to a singleton called \texttt{UserLoginService} which handles the necessary database interaction and which utilizes the same hashing method as mentioned to validate the submitted user object.
 
+This means that the solution considers each request as its own, and as such has no concept of a session. One could extend the current implementation and create a unique session hash on the server and store it in the user table, pass this session hash back to the client and let the client user it for some predefined number of seconds as a substitute for transmitting the actual user password. This would require some additional logic especially on part of the server, but would on the upside reduce the amount of times a user exposes their password to the network.
+
+If the incoming user password hashes to the same value as is stored in the database, using the same random salt, we consider the user object valid.
+
+\begin{figure}[h!]
+    \begin{lstlisting}
+Class.forName("org.sqlite.JDBC");
+Connection c = DriverManager.getConnection("jdbc:sqlite:printservice.db");
+
+ResultSet rs = c.createStatement().executeQuery(
+        "SELECT password, salt FROM Users WHERE username = '" + user.getUsername() + "';"
+);
+
+if (rs.next()) {
+    String digest = rs.getString("password");
+    String salt = rs.getString("salt");
+
+    // Compute the new digest
+    Pair<String, String> hash = HashingService.getInstance().hash(
+            user.getPassword(),
+            HashingService.getInstance().base64ToByte(salt)
+    );
+
+    if (!hash.getKey().equals(digest)) {
+        throw new LoginException();
+    }
+    return true;
+}
+    \end{lstlisting}
+    \caption{Java code from \texttt{UserLoginService} to authenticate a user object.}
+\end{figure}
 
 \newpage
 
-\section{Evaluation (2 pages)}
+\section{Evaluation}
 \label{sec:Evaluation}
 
-\textit{This section should document that the requirements defined in Section 2 have been satified by the implementation. In particular, the evaluation should demonstrate that the user is always authenticated by the server before the service is invoked, e.g. the username and methodname may be written to a logfile every time a service is invoked.
-The evaluation should provide a simple summary of which of the requirements are satisfied and which are not.}
+In the solution there is a unit test called integration-test. Running this test will yield the following output:
 
-\newpage
+\begin{lstlisting}[language=C]
+We try to sign in with a valid account
+0 : first.txt : printer1
+1 : second.txt : printer1
+2 : third.txt : printer2
+We try to sign in with an invalid account
+javax.security.auth.login.LoginException
+	at server.UserLoginService.login(UserLoginService.java:49)
+	at server.PrintServiceImpl.queue(PrintServiceImpl.java:44)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    ...
+We could not sign in with invalid account.
+\end{lstlisting}
 
-\section{Conclusion (1 page)}
+The client tries to add three files to the printer queues with a valid and with an invalid user. As shown by the thrown \texttt{LoginException}, the invalid user is unable to successfully add anything to the queue.
+
+\section{Conclusion}
 \label{sec:Conclusion}
 
-\textit{The conclusions should summarize the problems addressed in the report and clearly identify which of the requirements are satisfied and which are not (a summary of Section 4). The conclusions may also include a brief outline of future work.}
+As stated the solution does not address the problem of securely transporting the user password from the client to the server. This could have been done and can be retrofitted onto the solution by utilizing the \texttt{SslRMIServerSocketFactory} interface or creating ones own \texttt{RMIServerSocketFactory} and specifying the desired protocol. This was never tried due to time constraints.
+
+As demonstrated the solution successfully authenticates valid users for using the service, and likewise denies access to invalid users. It does this while storing the user passwords in a strongly hashed form, thus making their true value very unlikely to be found even in the case of the database being compromised.
 
 %\newpage
 %\appendix
