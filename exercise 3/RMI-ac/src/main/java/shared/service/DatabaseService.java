@@ -12,9 +12,9 @@ public class DatabaseService {
 
     private static final String DATABASE_URL = "jdbc:sqlite:printservice.db";
 
-    private static ConnectionSource connectionSource = getConnection();
+    static ConnectionSource connectionSource = getSource();
 
-    private static ConnectionSource getConnection() {
+    private static ConnectionSource getSource() {
         if (connectionSource == null) {
             try {
                 connectionSource = new JdbcPooledConnectionSource(DATABASE_URL);
@@ -23,6 +23,10 @@ public class DatabaseService {
             }
         }
         return connectionSource;
+    }
+
+    public static ConnectionSource getConnectionSource() {
+        return getSource();
     }
 
     public static <D extends Dao<T, ?>, T> D getDao(Class<T> tClass) throws SQLException {

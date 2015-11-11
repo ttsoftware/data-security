@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import shared.exception.UserPermissionException;
 import shared.service.DatabaseService;
 
 import java.io.Serializable;
@@ -53,15 +54,21 @@ public class UserRole implements Serializable {
         DatabaseService.getDao(UserRolePermission.class).create(userRolePermission);
     }
 
-    public boolean hasPermission(UserPermission permission) throws SQLException {
+    public boolean hasPermission(UserPermission permission) throws UserPermissionException {
 
         HashMap<String, Object> queryFields = new HashMap<>();
         queryFields.put("fk_user_role", this.getId());
         queryFields.put("permission", permission);
 
-        List<UserRolePermission> permissions = DatabaseService.getDao(UserRolePermission.class)
-                .queryForFieldValues(queryFields);
+        try {
+            List<UserRolePermission> permissions = DatabaseService.getDao(UserRolePermission.class)
+                    .queryForFieldValues(queryFields);
 
-        return permissions.size() == 1;
+            // There should only be one permission for that role with that name
+            return permissions.size() == 1;
+
+        } catch (SQLException e) {
+            throw new UserPermissionException(e);
+        }
     }
 }

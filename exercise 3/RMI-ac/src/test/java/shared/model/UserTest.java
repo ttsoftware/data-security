@@ -2,6 +2,8 @@ package shared.model;
 
 import com.j256.ormlite.dao.Dao;
 import shared.DatabaseTest;
+import shared.exception.UserPermissionException;
+import shared.model.dao.UserDao;
 import shared.service.DatabaseService;
 
 import java.io.UnsupportedEncodingException;
@@ -14,9 +16,14 @@ public class UserTest extends DatabaseTest {
     /**
      * Ensure persistance works with ormlite
      */
-    public void testPersistence() throws SQLException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    public void testPersistence() throws
+            SQLException,
+            UnsupportedEncodingException,
+            NoSuchAlgorithmException,
+            UserPermissionException
+    {
 
-        Dao<User, Integer> userDao = DatabaseService.getDao(User.class);
+        UserDao userDao = DatabaseService.getDao(User.class);
 
         UserRole newUserRole = new UserRole();
         newUserRole.setName("manager");
@@ -28,7 +35,8 @@ public class UserTest extends DatabaseTest {
         newUserRole.addPermission(UserPermission.CAN_STOP);
         newUserRole.addPermission(UserPermission.CAN_PRINT);
         newUserRole.addPermission(UserPermission.CAN_READ_CONFIG);
-        newUserRole.addPermission(UserPermission.CAN_SET_CONFIG);
+        newUserRole.addPermission(UserPermission.CAN_WRITE_CONFIG);
+        newUserRole.addPermission(UserPermission.CAN_READ_STATUS);
         newUserRole.addPermission(UserPermission.CAN_READ_QUEUE);
         newUserRole.addPermission(UserPermission.CAN_EDIT_QUEUE);
 

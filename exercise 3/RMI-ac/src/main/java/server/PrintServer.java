@@ -21,9 +21,8 @@ public class PrintServer implements Runnable {
     public void run() {
         seed();
 
-        Registry registry = null;
         try {
-            registry = LocateRegistry.createRegistry(30000);
+            Registry registry = LocateRegistry.createRegistry(30000);
 
             // create the service and perform the initial start-up
             registry.bind("printserver", new PrintServiceImpl("printserver", registry));
@@ -56,13 +55,7 @@ public class PrintServer implements Runnable {
             stmt.close();
             c.close();
 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (ClassNotFoundException | SQLException | IOException e) {
             e.printStackTrace();
         }
     }

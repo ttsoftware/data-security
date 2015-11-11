@@ -4,12 +4,13 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import javafx.util.Pair;
 import server.HashingService;
+import shared.model.dao.UserDao;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-@DatabaseTable(tableName = "Users")
+@DatabaseTable(tableName = "Users", daoClass = UserDao.class)
 public class User implements Serializable {
 
     @DatabaseField(generatedId = true)
@@ -55,14 +56,8 @@ public class User implements Serializable {
         return password;
     }
 
-    /**
-     * We assume given password is clear text
-     * @param password
-     */
-    public void setPassword(String password) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        Pair<String,String> hash = HashingService.hash(password);
-        this.password = hash.getKey();
-        this.salt = hash.getValue();
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getSalt() {

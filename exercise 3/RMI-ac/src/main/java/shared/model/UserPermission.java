@@ -10,5 +10,6 @@ public enum UserPermission implements Serializable {
     CAN_READ_QUEUE,
     CAN_EDIT_QUEUE,
     CAN_READ_CONFIG,
-    CAN_SET_CONFIG
+    CAN_WRITE_CONFIG,
+    CAN_READ_STATUS
 }

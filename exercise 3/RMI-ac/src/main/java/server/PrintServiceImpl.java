@@ -1,11 +1,13 @@
 package server;
 
+import shared.exception.UserAuthenticationException;
+import shared.exception.UserPermissionException;
+import shared.model.UserPermission;
 import shared.service.PrintService;
 import shared.PrintJob;
 import shared.PrintJobQueue;
 import shared.model.User;
 
-import javax.security.auth.login.LoginException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -26,29 +28,42 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         super();
 
         printQueue = new PrintJobQueue();
-        parameters = new HashMap<String, String>();
-        printers = new HashSet<String>();
+        parameters = new HashMap<>();
+        printers = new HashSet<>();
 
         this.name = name;
         this.registry = registry;
     }
 
-    public void print(String filename, String printer, User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public void print(String filename, String printer, User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_PRINT)) {
+
             printQueue.add(new PrintJob(filename, printer));
             printers.add(printer);
         }
     }
 
-    public HashMap<Integer, PrintJob> queue(User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public HashMap<Integer, PrintJob> queue(User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_READ_QUEUE)) {
             return printQueue.getJobs();
         }
-        throw new LoginException(); // necessary for compiler reasons
+        throw new UserAuthenticationException(); // necessary for compiler reasons
     }
 
-    public void topQueue(int jobId, User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public void topQueue(int jobId, User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_EDIT_QUEUE)) {
             try {
                 printQueue.prioritize(jobId);
             } catch (Exception e) {
@@ -57,33 +72,41 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         }
     }
 
-    public void start(User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public void start(User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_START)) {
             try {
                 registry.bind(name, this);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (AlreadyBoundException e) {
+            } catch (RemoteException | AlreadyBoundException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void stop(User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public void stop(User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_STOP)) {
             printQueue.clear();
             try {
                 registry.unbind(name);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (NotBoundException e) {
+            } catch (RemoteException | NotBoundException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void restart(User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public void restart(User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_RESTART)) {
             printQueue.clear();
             try {
                 registry.rebind(name, this);
@@ -93,22 +116,34 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         }
     }
 
-    public String status(User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public String status(User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_READ_STATUS)) {
             return null;
         }
-        throw new LoginException(); // necessary for compiler reasons
+        throw new UserAuthenticationException(); // necessary for compiler reasons
     }
 
-    public String readConfig(String parameter, User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public String readConfig(String parameter, User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_READ_CONFIG)) {
             return parameters.get(parameter);
         }
-        throw new LoginException(); // necessary for compiler reasons
+        throw new UserAuthenticationException(); // necessary for compiler reasons
     }
 
-    public void setConfig(String parameter, String value, User user) throws LoginException {
-        if (LoginService.login(user)) {
+    public void setConfig(String parameter, String value, User user) throws
+            UserAuthenticationException,
+            UserPermissionException
+    {
+        if (LoginService.login(user)
+                && user.getRole().hasPermission(UserPermission.CAN_WRITE_CONFIG)) {
             parameters.put(parameter, value);
         }
     }
