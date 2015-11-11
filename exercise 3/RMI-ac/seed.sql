@@ -5,11 +5,13 @@ CREATE TABLE IF NOT EXISTS `UserRoles` (
   `name` VARCHAR NOT NULL,
   UNIQUE (`name`)
 );
+
 CREATE TABLE IF NOT EXISTS `UserRolePermissions` (
   `id`           INTEGER PRIMARY KEY AUTOINCREMENT,
   `permission`   VARCHAR NOT NULL,
   `fk_user_role` INTEGER NOT NULL
 );
+
 CREATE TABLE IF NOT EXISTS `Users` (
   `id`           INTEGER PRIMARY KEY AUTOINCREMENT,
   `name`         VARCHAR NOT NULL,

@@ -2,11 +2,13 @@ package server;
 
 import javafx.util.Pair;
 import shared.model.User;
+import shared.service.DatabaseService;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.List;
 
 public class LoginService {
 
@@ -19,16 +21,14 @@ public class LoginService {
     public static boolean login(User user) throws LoginException {
 
         try {
-            Class.forName("org.sqlite.JDBC");
-            Connection c = DriverManager.getConnection("jdbc:sqlite:printservice.db");
 
-            ResultSet rs = c.createStatement().executeQuery(
-                    "SELECT password, salt FROM Users WHERE username = '" + user.getName() + "';"
-            );
+            List<User> users = DatabaseService.getDao(User.class).queryForEq("name", user.getName());
 
-            if (rs.next()) {
-                String digest = rs.getString("password");
-                String salt = rs.getString("salt");
+            if (users.size() == 1) {
+                User dbUser = users.get(0);
+
+                String digest = dbUser.getPassword();
+                String salt = dbUser.getSalt();
 
                 // Compute the new digest
                 Pair<String, String> hash = HashingService.hash(
@@ -41,8 +41,7 @@ public class LoginService {
                 }
                 return true;
             }
-
-        } catch (ClassNotFoundException | SQLException | NoSuchAlgorithmException | IOException e) {
+        } catch (SQLException | NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
         }
 

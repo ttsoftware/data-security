@@ -12,7 +12,7 @@ public class IntegrationTest {
 
         // remove the database file
 
-        Path databasePath = FileSystems.getDefault().getPath("printservice-junit.db");
+        Path databasePath = FileSystems.getDefault().getPath("printservice.db");
 
         try {
             Files.delete(databasePath);

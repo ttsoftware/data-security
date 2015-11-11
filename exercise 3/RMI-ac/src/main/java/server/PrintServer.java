@@ -28,9 +28,7 @@ public class PrintServer implements Runnable {
             // create the service and perform the initial start-up
             registry.bind("printserver", new PrintServiceImpl("printserver", registry));
         }
-        catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (AlreadyBoundException e) {
+        catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
         }
     }
