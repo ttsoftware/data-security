@@ -1,0 +1,139 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, hmargin={2.5cm, 2.5cm}, vmargin={2.5cm, 2.5cm}]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes, shadows, arrows, automata}
+
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage[english]{varioref}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{etoolbox}
+
+\usepackage{fancyhdr}
+
+\setlength\parindent{0pt}
+\usepackage[parfill]{parskip}
+
+\definecolor{pblue}{rgb}{0.13,0.13,1}
+\definecolor{pgreen}{rgb}{0,0.5,0}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{pgrey}{rgb}{0.46,0.45,0.48}
+\definecolor{mygray}{rgb}{0.9451,0.9451,0.9451}
+
+\lstset{
+  backgroundcolor=\color{mygray},
+  basicstyle=\footnotesize\ttfamily,
+  mathescape,
+  language=Java,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
+  breaklines=true,
+  numbers=left,
+  numberstyle=\ttfamily,
+  stepnumber=1,
+  firstnumber=1,
+  numberfirstline=true,
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+  literate={->}{$\rightarrow$}{2}
+           {ε}{$\varepsilon$}{1}
+}
+
+\linespread{1.3}
+
+\title{
+  \vspace{4cm}
+  \begin{flushleft}
+  \Large{\textbf{Excercise 3 - Access Control}} \\
+  \large{Data Security} \\
+  \end{flushleft}
+  \vspace{0cm}
+  \begin{flushleft}
+  \small
+  \textit{\today}
+  \end{flushleft}
+  \vspace{12cm}
+  \begin{flushleft}
+  \small
+  By Troels Thomsen \texttt{152165}\\
+  Discussed with Rasmus Haarslev \texttt{152175}
+  \end{flushleft}
+}
+
+\date{
+	%
+}
+
+\begin{document}
+
+\clearpage
+\pagenumbering{gobble}
+\thispagestyle{empty}
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Introduction}
+\label{sec:Introduction}
+
+\newpage
+
+\section{Access Control Lists}
+\label{sec:Access Control Lists}
+
+\begin{itemize}
+    \item Alice is managing the print server, so she has the rights to perform all operations.
+    \item Bob is the janitor who doubles as service technician, he has the rights to start, stop and restart the print server as well as inspect and modify the service parameters, i.e., invoke the status, readConfig and setConfig operations.
+    \item Cecilia is a power user, who is allowed to print files and manage the print queue, i.e., use queue and topQueue as well as restart the print server when everything seems to be stuck.
+    \item David is an ordinary user who is only allowed to print files and display the print queue.
+    \item Erica is an ordinary user who is only allowed to print files and display the print queue.
+    \item Fred is an ordinary user who is only allowed to print files and display the print queue.
+    \item George is an ordinary user who is only allowed to print files and display the print queue.
+\end{itemize}
+
+
+\newpage
+
+\section{Role Based Access Control}
+\label{sec:Role Based Access Control}
+
+\newpage
+
+\section{Evaluation}
+\label{sec:Evaluation}
+
+\newpage
+
+\section{Discussion}
+\label{sec:Discussion}
+
+\newpage
+
+\section{Conclusion}
+\label{sec:Conclusion}
+
+
+\end{document}
