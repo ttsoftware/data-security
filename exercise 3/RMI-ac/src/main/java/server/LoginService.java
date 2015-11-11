@@ -36,6 +36,12 @@ public class LoginService {
                         HashingService.base64ToByte(salt)
                 );
 
+                System.out.println(user.getPassword());
+                System.out.println(digest);
+                System.out.println(hash.getKey());
+                System.out.println(salt);
+                System.out.println(user.getSalt());
+
                 if (!hash.getKey().equals(digest)) {
                     throw new UserAuthenticationException();
                 }

@@ -1,9 +1,8 @@
 package shared.model;
 
-import com.j256.ormlite.dao.Dao;
 import shared.DatabaseTest;
 import shared.exception.UserPermissionException;
-import shared.model.dao.UserDao;
+import shared.model.dao.UserDaoImpl;
 import shared.service.DatabaseService;
 
 import java.io.UnsupportedEncodingException;
@@ -23,7 +22,7 @@ public class UserTest extends DatabaseTest {
             UserPermissionException
     {
 
-        UserDao userDao = DatabaseService.getDao(User.class);
+        UserDaoImpl userDao = DatabaseService.getDao(User.class);
 
         UserRole newUserRole = new UserRole();
         newUserRole.setName("manager");

@@ -2,15 +2,11 @@ package shared.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import javafx.util.Pair;
-import server.HashingService;
-import shared.model.dao.UserDao;
+import shared.model.dao.UserDaoImpl;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
-@DatabaseTable(tableName = "Users", daoClass = UserDao.class)
+@DatabaseTable(tableName = "Users", daoClass = UserDaoImpl.class)
 public class User implements Serializable {
 
     @DatabaseField(generatedId = true)
