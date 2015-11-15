@@ -1,4 +1,4 @@
-package shared.service;
+package server.service;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;

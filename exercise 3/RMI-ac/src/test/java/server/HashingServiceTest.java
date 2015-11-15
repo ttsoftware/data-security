@@ -2,7 +2,7 @@ package server;
 
 import javafx.util.Pair;
 import org.junit.Test;
-import server.HashingService;
+import server.service.HashingService;
 
 import static org.junit.Assert.*;
 

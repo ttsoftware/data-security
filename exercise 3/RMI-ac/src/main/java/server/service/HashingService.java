@@ -1,4 +1,4 @@
-package server;
+package server.service;
 
 import javafx.util.Pair;
 

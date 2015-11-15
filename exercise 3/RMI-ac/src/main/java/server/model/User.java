@@ -1,8 +1,8 @@
-package shared.model;
+package server.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import shared.model.dao.UserDaoImpl;
+import server.model.dao.UserDaoImpl;
 
 import java.io.Serializable;
 

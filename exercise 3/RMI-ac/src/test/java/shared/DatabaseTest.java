@@ -5,10 +5,10 @@ import org.dbunit.IDatabaseTester;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.operation.DatabaseOperation;
-import shared.model.User;
-import shared.model.UserRole;
-import shared.model.UserRolePermission;
-import shared.service.DatabaseService;
+import server.model.User;
+import server.model.UserRole;
+import server.model.UserRolePermission;
+import server.service.DatabaseService;
 
 public abstract class DatabaseTest extends DBTestCase {
 

@@ -10,10 +10,8 @@ import java.rmi.RemoteException;
 public class PrintClient implements Runnable {
 
     public void run() {
-        PrintService printService = null;
-
         try {
-            printService = (PrintService) Naming.lookup("rmi://localhost:30000/printserver");
+            PrintService printService = (PrintService) Naming.lookup("rmi://localhost:30000/printserver");
         }
         catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();

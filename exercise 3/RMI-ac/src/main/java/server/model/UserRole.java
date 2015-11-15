@@ -1,18 +1,16 @@
-package shared.model;
+package server.model;
 
 import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import shared.exception.UserPermissionException;
-import shared.service.DatabaseService;
+import server.service.DatabaseService;
 
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @DatabaseTable(tableName = "UserRoles")
 public class UserRole implements Serializable {
@@ -65,8 +63,10 @@ public class UserRole implements Serializable {
                     .queryForFieldValues(queryFields);
 
             // There should only be one permission for that role with that name
-            return permissions.size() == 1;
-
+            if (permissions.size() != 1) {
+                throw new UserPermissionException("User did not meet permission requirements for operation: " + permission);
+            }
+            return true;
         } catch (SQLException e) {
             throw new UserPermissionException(e);
         }

@@ -1,12 +1,13 @@
 package server;
 
+import server.service.LoginService;
 import shared.exception.UserAuthenticationException;
 import shared.exception.UserPermissionException;
-import shared.model.UserPermission;
+import server.model.UserPermission;
 import shared.service.PrintService;
 import shared.PrintJob;
 import shared.PrintJobQueue;
-import shared.model.User;
+import server.model.User;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
@@ -56,7 +57,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         if (user.getRole().hasPermission(UserPermission.CAN_READ_QUEUE)) {
             return printQueue.getJobs();
         }
-        throw new UserAuthenticationException(); // necessary for compiler reasons
+        throw new UserAuthenticationException();
     }
 
     public void topQueue(int jobId, String username, String password) throws
@@ -130,7 +131,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         if (user.getRole().hasPermission(UserPermission.CAN_READ_STATUS)) {
             return null;
         }
-        throw new UserAuthenticationException(); // necessary for compiler reasons
+        throw new UserAuthenticationException(); 
     }
 
     public String readConfig(String parameter, String username, String password) throws
@@ -142,7 +143,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         if (user.getRole().hasPermission(UserPermission.CAN_READ_CONFIG)) {
             return parameters.get(parameter);
         }
-        throw new UserAuthenticationException(); // necessary for compiler reasons
+        throw new UserAuthenticationException(); 
     }
 
     public void setConfig(String parameter, String value, String username, String password) throws

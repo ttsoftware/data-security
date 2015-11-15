@@ -1,11 +1,11 @@
-package shared.model.dao;
+package server.model.dao;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import javafx.util.Pair;
-import server.HashingService;
-import shared.model.User;
+import server.service.HashingService;
+import server.model.User;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;

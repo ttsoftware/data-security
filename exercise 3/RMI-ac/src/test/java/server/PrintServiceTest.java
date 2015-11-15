@@ -43,4 +43,29 @@ public class PrintServiceTest extends DatabaseTest {
         assertEquals(job.getFilename(), "testfile");
         assertEquals(job.getPrinter(), "printer1");
     }
+
+    /**
+     * Make sure users with different policy cannot perform operations outside of their role
+     */
+    public void testAccessPolicy() throws
+            RemoteException,
+            NotBoundException,
+            MalformedURLException,
+            UserAuthenticationException,
+            UserPermissionException
+    {
+
+        PrintServer server = new PrintServer();
+        server.run();
+
+        PrintService printService = (PrintService) Naming.lookup("rmi://localhost:30000/printserver");
+
+        try {
+            // David is only allowed to print and view the print queue.
+            printService.restart("David", "password");
+        }
+        catch (UserPermissionException e) {
+            assertEquals("User did not meet permission requirements for operation: CAN_RESTART", e.getMessage());
+        }
+    }
 }

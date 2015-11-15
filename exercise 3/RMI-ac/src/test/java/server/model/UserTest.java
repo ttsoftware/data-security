@@ -1,9 +1,9 @@
-package shared.model;
+package server.model;
 
 import shared.DatabaseTest;
 import shared.exception.UserPermissionException;
-import shared.model.dao.UserDaoImpl;
-import shared.service.DatabaseService;
+import server.model.dao.UserDaoImpl;
+import server.service.DatabaseService;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;

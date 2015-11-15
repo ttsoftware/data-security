@@ -1,7 +1,7 @@
-package shared.model.dao;
+package server.model.dao;
 
 import com.j256.ormlite.dao.Dao;
-import shared.model.User;
+import server.model.User;
 
 import java.sql.SQLException;
 

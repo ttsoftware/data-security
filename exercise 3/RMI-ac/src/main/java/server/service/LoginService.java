@@ -1,9 +1,8 @@
-package server;
+package server.service;
 
 import javafx.util.Pair;
 import shared.exception.UserAuthenticationException;
-import shared.model.User;
-import shared.service.DatabaseService;
+import server.model.User;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

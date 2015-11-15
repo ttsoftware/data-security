@@ -3,7 +3,6 @@ package shared.service;
 import shared.PrintJob;
 import shared.exception.UserAuthenticationException;
 import shared.exception.UserPermissionException;
-import shared.model.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
