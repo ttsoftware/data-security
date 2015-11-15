@@ -8,6 +8,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.ExportException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,6 +26,9 @@ public class PrintServer implements Runnable {
 
             // create the service and perform the initial start-up
             registry.bind("printserver", new PrintServiceImpl("printserver", registry));
+        }
+        catch (ExportException ee) {
+            System.out.println("Another server is already running on port 30000.");
         }
         catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();

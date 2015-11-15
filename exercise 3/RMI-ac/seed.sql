@@ -1,9 +1,5 @@
 PRAGMA foreign_keys = ON;
 
-DROP TABLE Users;
-DROP TABLE UserRolePermissions;
-DROP TABLE UserRoles;
-
 CREATE TABLE IF NOT EXISTS `UserRoles` (
   `id`   INTEGER PRIMARY KEY AUTOINCREMENT,
   `name` VARCHAR UNIQUE NOT NULL,
