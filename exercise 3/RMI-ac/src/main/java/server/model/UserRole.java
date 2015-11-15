@@ -43,6 +43,11 @@ public class UserRole implements Serializable {
         return permissions;
     }
 
+    /**
+     * Adds the permission to this user role
+     * @param permission
+     * @throws SQLException
+     */
     public void addPermission(UserPermission permission) throws SQLException {
 
         UserRolePermission userRolePermission = new UserRolePermission();
@@ -52,6 +57,22 @@ public class UserRole implements Serializable {
         DatabaseService.getDao(UserRolePermission.class).create(userRolePermission);
     }
 
+    /**
+     * Removes the permission for this UserRole
+     * @param permission
+     * @throws SQLException
+     */
+    public void removePermission(UserPermission permission) throws SQLException {
+
+        HashMap<String, Object> queryFields = new HashMap<>();
+        queryFields.put("fk_user_role", this.getId());
+        queryFields.put("permission", permission);
+
+        // there should only be one mapping matching this query
+        List<UserRolePermission> permissions = DatabaseService.getDao(UserRolePermission.class).queryForFieldValues(queryFields);
+        DatabaseService.getDao(UserRolePermission.class).delete(permissions);
+    }
+
     public boolean hasPermission(UserPermission permission) throws UserPermissionException {
 
         HashMap<String, Object> queryFields = new HashMap<>();
@@ -59,8 +80,7 @@ public class UserRole implements Serializable {
         queryFields.put("permission", permission);
 
         try {
-            List<UserRolePermission> permissions = DatabaseService.getDao(UserRolePermission.class)
-                    .queryForFieldValues(queryFields);
+            List<UserRolePermission> permissions = DatabaseService.getDao(UserRolePermission.class).queryForFieldValues(queryFields);
 
             // There should only be one permission for that role with that name
             if (permissions.size() != 1) {
