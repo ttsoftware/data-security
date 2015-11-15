@@ -7,9 +7,9 @@ public class PrintJob implements Serializable {
     private final String printer;
     private final String filename;
 
-    public PrintJob(String printer, String filename) {
-        this.printer = printer;
+    public PrintJob(String filename, String printer) {
         this.filename = filename;
+        this.printer = printer;
     }
 
     public String getFilename() {

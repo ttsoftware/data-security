@@ -12,17 +12,22 @@ import java.util.List;
 
 public class LoginService {
 
+    public static User login(User user) throws UserAuthenticationException {
+        return login(user.getName(), user.getPassword());
+    }
+
     /**
      * Log user into system if they exist and given password is correct
-     * @param user The user to be logged in
+     * @param username
+     * @param password
      * @return True if user exists and password is correct
      * @throws UserAuthenticationException
      */
-    public static boolean login(User user) throws UserAuthenticationException {
+    public static User login(String username, String password) throws UserAuthenticationException {
 
         try {
 
-            List<User> users = DatabaseService.getDao(User.class).queryForEq("name", user.getName());
+            List<User> users = DatabaseService.getDao(User.class).queryForEq("name", username);
 
             if (users.size() == 1) {
                 User dbUser = users.get(0);
@@ -32,20 +37,14 @@ public class LoginService {
 
                 // Compute the new digest
                 Pair<String, String> hash = HashingService.hash(
-                        user.getPassword(),
+                        password,
                         HashingService.base64ToByte(salt)
                 );
-
-                System.out.println(user.getPassword());
-                System.out.println(digest);
-                System.out.println(hash.getKey());
-                System.out.println(salt);
-                System.out.println(user.getSalt());
 
                 if (!hash.getKey().equals(digest)) {
                     throw new UserAuthenticationException();
                 }
-                return true;
+                return dbUser;
             }
         } catch (SQLException | NoSuchAlgorithmException | IOException e) {
             throw new UserAuthenticationException(e);

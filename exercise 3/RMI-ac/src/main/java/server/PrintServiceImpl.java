@@ -35,35 +35,37 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         this.registry = registry;
     }
 
-    public void print(String filename, String printer, User user) throws
+    public void print(String filename, String printer, String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_PRINT)) {
+        User user = LoginService.login(username, password);
 
+        if (user.getRole().hasPermission(UserPermission.CAN_PRINT)) {
             printQueue.add(new PrintJob(filename, printer));
             printers.add(printer);
         }
     }
 
-    public HashMap<Integer, PrintJob> queue(User user) throws
+    public HashMap<Integer, PrintJob> queue(String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_READ_QUEUE)) {
+        User user = LoginService.login(username, password);
+
+        if (user.getRole().hasPermission(UserPermission.CAN_READ_QUEUE)) {
             return printQueue.getJobs();
         }
         throw new UserAuthenticationException(); // necessary for compiler reasons
     }
 
-    public void topQueue(int jobId, User user) throws
+    public void topQueue(int jobId, String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_EDIT_QUEUE)) {
+        User user = LoginService.login(username, password);
+
+        if (user.getRole().hasPermission(UserPermission.CAN_EDIT_QUEUE)) {
             try {
                 printQueue.prioritize(jobId);
             } catch (Exception e) {
@@ -72,12 +74,13 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         }
     }
 
-    public void start(User user) throws
+    public void start(String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_START)) {
+        User user = LoginService.login(username, password);
+
+        if (user.getRole().hasPermission(UserPermission.CAN_START)) {
             try {
                 registry.bind(name, this);
             } catch (RemoteException | AlreadyBoundException e) {
@@ -86,12 +89,13 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         }
     }
 
-    public void stop(User user) throws
+    public void stop(String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_STOP)) {
+        User user = LoginService.login(username, password);
+
+        if (user.getRole().hasPermission(UserPermission.CAN_STOP)) {
             printQueue.clear();
             try {
                 registry.unbind(name);
@@ -101,12 +105,13 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         }
     }
 
-    public void restart(User user) throws
+    public void restart(String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_RESTART)) {
+        User user = LoginService.login(username, password);
+
+        if (user.getRole().hasPermission(UserPermission.CAN_RESTART)) {
             printQueue.clear();
             try {
                 registry.rebind(name, this);
@@ -116,34 +121,37 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
         }
     }
 
-    public String status(User user) throws
+    public String status(String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_READ_STATUS)) {
+        User user = LoginService.login(username, password);
+
+        if (user.getRole().hasPermission(UserPermission.CAN_READ_STATUS)) {
             return null;
         }
         throw new UserAuthenticationException(); // necessary for compiler reasons
     }
 
-    public String readConfig(String parameter, User user) throws
+    public String readConfig(String parameter, String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_READ_CONFIG)) {
+        User user = LoginService.login(username, password);
+
+        if (user.getRole().hasPermission(UserPermission.CAN_READ_CONFIG)) {
             return parameters.get(parameter);
         }
         throw new UserAuthenticationException(); // necessary for compiler reasons
     }
 
-    public void setConfig(String parameter, String value, User user) throws
+    public void setConfig(String parameter, String value, String username, String password) throws
             UserAuthenticationException,
             UserPermissionException
     {
-        if (LoginService.login(user)
-                && user.getRole().hasPermission(UserPermission.CAN_WRITE_CONFIG)) {
+        User user = LoginService.login(username, password);
+
+        if (user.getRole().hasPermission(UserPermission.CAN_WRITE_CONFIG)) {
             parameters.put(parameter, value);
         }
     }

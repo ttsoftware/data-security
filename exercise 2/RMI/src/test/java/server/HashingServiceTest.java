@@ -21,5 +21,6 @@ public class HashingServiceTest {
         System.out.println(hash.getValue());
 
         assertNotEquals(password, hash.getKey());
+        assertTrue(hash.getKey().equalsIgnoreCase("\n"));
     }
 }

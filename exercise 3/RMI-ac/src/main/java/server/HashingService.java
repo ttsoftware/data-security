@@ -1,13 +1,12 @@
 package server;
 
 import javafx.util.Pair;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Random;
 
 public class HashingService {
@@ -44,8 +43,7 @@ public class HashingService {
      * @throws IOException
      */
     public static byte[] base64ToByte(String data) throws IOException {
-        BASE64Decoder decoder = new BASE64Decoder();
-        return decoder.decodeBuffer(data);
+        return Base64.getDecoder().decode(data);
     }
 
     /**
@@ -55,7 +53,6 @@ public class HashingService {
      * @return String
      */
     public static String byteToBase64(byte[] data) {
-        BASE64Encoder endecoder = new BASE64Encoder();
-        return endecoder.encode(data);
+        return Base64.getEncoder().encodeToString(data);
     }
 }
