@@ -99,12 +99,37 @@
 \section{Introduction}
 \label{sec:Introduction}
 
+\textit{The introduction should provide a general introduction to the problem of access control in client/server applications. It should define the scope of the answer, i.e. explicitly state what problems are considered, and outline the proposed solution. Finally, it should clearly state which of the identified goals are met by the developed software.}
+
+In any system that deals with end-users, access control is a feature which usually allows the system to either expand onto a wider user base, or allow a system to add or include more functionality. If we consider a  simple system with a small homogeneous group of users, where we desire to add new features which would benefit some users, but which might not be suited for all users. In this case we either need access control or an entirely new system. Opting for access control is in most cases the preferred solution, since having many related but different systems lowers the end-user usability and user experience. We must note however, that integrating large systems into one another can still lead to a wide variety of usability and user experience problems even if access control is correctly implemented.
+
+Building on the solution from the previous Data Security lab on authentication, our goal for this lab is to extend the functionality of the print server such that it supports different user access levels for specific actions on the server. Currently all registered users in the system are allowed to perform all actions on the server as defined in the print server interface. By providing granularity in what actions can be taken by which users we improve the systems overall usability, since it now can support a wider range of users.
+
+Our access control implementation provides both the functionality of an access control list and the functionality of role based access control at the same time. We have chosen to implement both at the same time, because we consider it the optimal solution while still providing a good example for discussing both approaches and comparing them against each other. The solution makes the assumption that all communication between client and server takes place on a secure network, and as such sends all passwords in clear text.
+
+
 \newpage
 
 \section{Access Control Lists}
 \label{sec:Access Control Lists}
 
-For access control list we assign a list of permissions to each user individually. 
+\textit{This section should provide a short overview of the implementation of the access control lists and the motivation behind all non-trivial design choices.}
+
+For access control list we assign a list of permissions to each user individually. We have implemented this with a new field in the user table in our sqlite database. The field is called "permissions" and contains a JSON string describing an array which contains the permissions associated with the given user.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+Id & Name & Password & Salt & Permissions \\
+\hline
+1 & troels & zs0+Of9p \ldots & MsPSanA8kTQ= & ["CAN\_STOP", "CAN\_RESTART" \ldots] \\
+\hline
+\end{tabular}
+
+\caption{Example user row containing a JSON list of permissions}
+\label{json-permissions}
+\end{table}
 
 \begin{itemize}
     \item Alice is managing the print server, so she has the rights to perform all operations.
@@ -122,20 +147,27 @@ For access control list we assign a list of permissions to each user individuall
 \section{Role Based Access Control}
 \label{sec:Role Based Access Control}
 
+\textit{This section should document the results of the role mining process performed in in Task 2 and provide a short overview of the implementation of the role based access control mechanism implemented in Task 3 along with the motivation behind all non-trivial design choices. In particular, it must describe the syntax used to specify the RBAC policy.}
+
 \newpage
 
 \section{Evaluation}
 \label{sec:Evaluation}
+
+\textit{This section should document that the prototype enforces the access control policies defined in this assignment; both ACL and RBAC and both before and after the changes. The evaluation should provide a simple summary of which of the requirements are satisfied and which are not.}
 
 \newpage
 
 \section{Discussion}
 \label{sec:Discussion}
 
+\textit{This section documents the reflections and discussions of the final task.}
+
 \newpage
 
 \section{Conclusion}
 \label{sec:Conclusion}
 
+\textit{The conclusions should summarize the problems addressed in the report and clearly identify which of the requirements are satisfied and which are not (a summary of Section 4). The conclusions may also include a brief outline of future work.}
 
 \end{document}
