@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `name`         VARCHAR NOT NULL,
   `password`     VARCHAR NOT NULL,
   `salt`         VARCHAR NOT NULL,
+  `permissions`  VARCHAR NOT NULL DEFAULT '[]',
   `fk_user_role` INTEGER NOT NULL,
   UNIQUE (`name`)
 );

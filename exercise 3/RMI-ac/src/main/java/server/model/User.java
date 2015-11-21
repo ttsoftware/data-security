@@ -3,8 +3,16 @@ package server.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import server.model.dao.UserDaoImpl;
+import server.service.DatabaseService;
+import shared.exception.UserPermissionException;
 
+import javax.json.*;
 import java.io.Serializable;
+import java.io.StringReader;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @DatabaseTable(tableName = "Users", daoClass = UserDaoImpl.class)
 public class User implements Serializable {
@@ -27,6 +35,12 @@ public class User implements Serializable {
             foreignAutoCreate = true,
             columnName = "fk_user_role")
     private UserRole role;
+
+    /**
+     * This is a JSON list of User specific UserPermission's
+     */
+    @DatabaseField(canBeNull = false, defaultValue = "[]")
+    private String permissions;
 
     public User() {
 
@@ -72,4 +86,50 @@ public class User implements Serializable {
         this.role = role;
     }
 
+    public List<String> getPermissions() {
+        JsonArray permissionsJSONArray = Json.createReader(new StringReader(permissions)).readArray();
+        List<JsonString> permissionsArray = permissionsJSONArray.getValuesAs(JsonString.class);
+
+        return permissionsArray.stream().map(JsonString::getString).collect(Collectors.toList());
+    }
+
+    public void addPermission(UserPermission permission) {
+        if (permissions == null) permissions = "[]";
+
+        JsonArray permissionsJSONArray = Json.createReader(new StringReader(permissions)).readArray();
+
+        // build new array
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        jsonArrayBuilder.add(permission.name());
+
+        // add all elements from existing array
+        permissionsJSONArray.forEach(jsonArrayBuilder::add);
+
+        this.permissions = jsonArrayBuilder.build().toString();
+    }
+
+    public boolean hasPermission(UserPermission permission) throws UserPermissionException {
+
+        for (String userPermission : getPermissions()) {
+            if (userPermission.equals(permission.name())) {
+                return true;
+            }
+        }
+
+        HashMap<String, Object> queryFields = new HashMap<>();
+        queryFields.put("fk_user_role", this.getRole().getId());
+        queryFields.put("permission", permission);
+
+        try {
+            List<UserRolePermission> permissions = DatabaseService.getDao(UserRolePermission.class).queryForFieldValues(queryFields);
+
+            // There should only be one permission for that role with that name
+            if (permissions.size() != 1) {
+                throw new UserPermissionException("User did not meet permission requirements for operation: " + permission);
+            }
+            return true;
+        } catch (SQLException e) {
+            throw new UserPermissionException(e);
+        }
+    }
 }

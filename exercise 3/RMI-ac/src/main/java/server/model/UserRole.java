@@ -72,23 +72,4 @@ public class UserRole implements Serializable {
         List<UserRolePermission> permissions = DatabaseService.getDao(UserRolePermission.class).queryForFieldValues(queryFields);
         DatabaseService.getDao(UserRolePermission.class).delete(permissions);
     }
-
-    public boolean hasPermission(UserPermission permission) throws UserPermissionException {
-
-        HashMap<String, Object> queryFields = new HashMap<>();
-        queryFields.put("fk_user_role", this.getId());
-        queryFields.put("permission", permission);
-
-        try {
-            List<UserRolePermission> permissions = DatabaseService.getDao(UserRolePermission.class).queryForFieldValues(queryFields);
-
-            // There should only be one permission for that role with that name
-            if (permissions.size() != 1) {
-                throw new UserPermissionException("User did not meet permission requirements for operation: " + permission);
-            }
-            return true;
-        } catch (SQLException e) {
-            throw new UserPermissionException(e);
-        }
-    }
 }

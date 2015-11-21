@@ -6,8 +6,10 @@ import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import server.model.User;
+import server.model.UserPermission;
 import server.model.UserRole;
 import server.model.UserRolePermission;
+import server.model.dao.UserDaoImpl;
 import server.service.DatabaseService;
 
 public abstract class DatabaseTest extends DBTestCase {
@@ -18,8 +20,10 @@ public abstract class DatabaseTest extends DBTestCase {
 
         databaseTester = new JdbcDatabaseTester(
                 "org.sqlite.JDBC",
-                "jdbc:sqlite:printservice.db"
+                "jdbc:sqlite:printservice-test.db"
         );
+
+        DatabaseService.setDatabaseUrl("jdbc:sqlite:printservice-test.db");
 
         // try to create roles and permissions for users
 

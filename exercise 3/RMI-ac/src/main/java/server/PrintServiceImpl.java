@@ -42,7 +42,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_PRINT)) {
+        if (user.hasPermission(UserPermission.CAN_PRINT)) {
             printQueue.add(new PrintJob(filename, printer));
             printers.add(printer);
         }
@@ -54,7 +54,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_READ_QUEUE)) {
+        if (user.hasPermission(UserPermission.CAN_READ_QUEUE)) {
             return printQueue.getJobs();
         }
         throw new UserAuthenticationException();
@@ -66,7 +66,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_EDIT_QUEUE)) {
+        if (user.hasPermission(UserPermission.CAN_EDIT_QUEUE)) {
             try {
                 printQueue.prioritize(jobId);
             } catch (Exception e) {
@@ -81,7 +81,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_START)) {
+        if (user.hasPermission(UserPermission.CAN_START)) {
             try {
                 registry.bind(name, this);
             } catch (RemoteException | AlreadyBoundException e) {
@@ -96,7 +96,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_STOP)) {
+        if (user.hasPermission(UserPermission.CAN_STOP)) {
             printQueue.clear();
             try {
                 registry.unbind(name);
@@ -112,7 +112,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_RESTART)) {
+        if (user.hasPermission(UserPermission.CAN_RESTART)) {
             printQueue.clear();
             try {
                 registry.rebind(name, this);
@@ -128,7 +128,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_READ_STATUS)) {
+        if (user.hasPermission(UserPermission.CAN_READ_STATUS)) {
             return null;
         }
         throw new UserAuthenticationException(); 
@@ -140,7 +140,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_READ_CONFIG)) {
+        if (user.hasPermission(UserPermission.CAN_READ_CONFIG)) {
             return parameters.get(parameter);
         }
         throw new UserAuthenticationException(); 
@@ -152,7 +152,7 @@ public class PrintServiceImpl extends UnicastRemoteObject implements PrintServic
     {
         User user = LoginService.login(username, password);
 
-        if (user.getRole().hasPermission(UserPermission.CAN_WRITE_CONFIG)) {
+        if (user.hasPermission(UserPermission.CAN_WRITE_CONFIG)) {
             parameters.put(parameter, value);
         }
     }

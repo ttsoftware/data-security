@@ -10,19 +10,31 @@ import java.sql.SQLException;
 
 public class DatabaseService {
 
-    private static final String DATABASE_URL = "jdbc:sqlite:printservice.db";
-
-    static ConnectionSource connectionSource = getSource();
+    private static String databaseUrl;
+    private static ConnectionSource connectionSource = getSource();
 
     private static ConnectionSource getSource() {
         if (connectionSource == null) {
             try {
-                connectionSource = new JdbcPooledConnectionSource(DATABASE_URL);
+                if (getDatabaseUrl() == null) {
+                    setDatabaseUrl("jdbc:sqlite:printservice.db");
+                }
+                connectionSource = new JdbcPooledConnectionSource(getDatabaseUrl());
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
         return connectionSource;
+    }
+
+    public static void setDatabaseUrl(String dbUrl) {
+        databaseUrl = dbUrl;
+        connectionSource = null;
+        connectionSource = getSource();
+    }
+
+    public static String getDatabaseUrl() {
+        return databaseUrl;
     }
 
     public static ConnectionSource getConnectionSource() {
