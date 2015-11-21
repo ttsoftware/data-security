@@ -10,17 +10,6 @@ public class IntegrationTest {
     @Test
     public void integration() throws IOException {
 
-        // remove the database file
-
-        Path databasePath = FileSystems.getDefault().getPath("printservice.db");
-
-        try {
-            Files.delete(databasePath);
-        }
-        catch (NoSuchFileException e) {
-            // The database is going to be created
-        }
-
         // run both server and client at the same time
 
         PrintServer server = new PrintServer();

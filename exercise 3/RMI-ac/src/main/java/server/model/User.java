@@ -108,6 +108,16 @@ public class User implements Serializable {
         this.permissions = jsonArrayBuilder.build().toString();
     }
 
+    /**
+     * Checks if a User has the given permission.
+     * This method takes both cases into consideration:
+     *      - First we check if the user has the given permission associated directly
+     *      - Second we check if the user's role has the given permission
+     *
+     * @param permission
+     * @return boolean
+     * @throws UserPermissionException
+     */
     public boolean hasPermission(UserPermission permission) throws UserPermissionException {
 
         for (String userPermission : getPermissions()) {

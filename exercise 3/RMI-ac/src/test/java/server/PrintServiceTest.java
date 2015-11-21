@@ -1,5 +1,10 @@
 package server;
 
+import server.model.User;
+import server.model.UserPermission;
+import server.model.UserRole;
+import server.model.dao.UserDaoImpl;
+import server.service.DatabaseService;
 import shared.DatabaseTest;
 import shared.PrintJob;
 import shared.exception.UserAuthenticationException;
@@ -16,6 +21,39 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public class PrintServiceTest extends DatabaseTest {
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
+        UserDaoImpl userDao = DatabaseService.getDao(User.class);
+
+        UserRole newUserRole = new UserRole();
+        newUserRole.setName("admin");
+
+        DatabaseService.getDao(UserRole.class).create(newUserRole);
+
+        newUserRole.addPermission(UserPermission.CAN_PRINT);
+        newUserRole.addPermission(UserPermission.CAN_READ_CONFIG);
+        newUserRole.addPermission(UserPermission.CAN_WRITE_CONFIG);
+        newUserRole.addPermission(UserPermission.CAN_READ_STATUS);
+        newUserRole.addPermission(UserPermission.CAN_READ_QUEUE);
+        newUserRole.addPermission(UserPermission.CAN_EDIT_QUEUE);
+
+        User newUser = new User();
+        newUser.setName("troels");
+        newUser.setPassword("password");
+        newUser.setRole(newUserRole);
+
+        userDao.create(newUser);
+
+        newUser = new User();
+        newUser.setName("David");
+        newUser.setPassword("password");
+        newUser.setRole(newUserRole);
+
+        userDao.create(newUser);
+    }
 
     public void testPrint() throws
             SQLException,
