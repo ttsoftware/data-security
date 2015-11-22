@@ -35,10 +35,6 @@ public class UserTest extends DatabaseTest {
         newUser.setPassword("password");
         newUser.setRole(newUserRole);
 
-        newUser.addPermission(UserPermission.CAN_RESTART);
-        newUser.addPermission(UserPermission.CAN_START);
-        newUser.addPermission(UserPermission.CAN_STOP);
-
         userDao.create(newUser);
     }
 
@@ -73,7 +69,23 @@ public class UserTest extends DatabaseTest {
         List<User> userList = userDao.queryForEq("name", "troels");
         User user = userList.get(0);
 
+        user.addPermission(UserPermission.CAN_RESTART);
+        user.addPermission(UserPermission.CAN_START);
+        user.addPermission(UserPermission.CAN_STOP);
+        userDao.update(user);
+
         assertTrue(user.hasPermission(UserPermission.CAN_STOP));
         assertTrue(user.hasPermission(UserPermission.CAN_PRINT));
+        assertTrue(user.hasPermission(UserPermission.CAN_RESTART));
+
+        user.removePermission(UserPermission.CAN_RESTART);
+        userDao.update(user);
+
+        try {
+            assertFalse(user.hasPermission(UserPermission.CAN_RESTART));
+        }
+        catch (UserPermissionException e) {
+            // Success!
+        }
     }
 }

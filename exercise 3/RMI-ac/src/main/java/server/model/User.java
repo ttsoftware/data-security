@@ -93,11 +93,39 @@ public class User implements Serializable {
         return permissionsArray.stream().map(JsonString::getString).collect(Collectors.toList());
     }
 
+    public void removePermission(UserPermission permission) {
+        boolean userHasPermission = false;
+
+        // we do not want to remove the permission if it does not exists in the list
+        for (String userPermission : getPermissions()) {
+            if (userPermission.equals(permission.name())) {
+                userHasPermission = true;
+            }
+        }
+
+        if (userHasPermission) {
+            JsonArray permissionsJSONArray = Json.createReader(new StringReader(permissions)).readArray();
+
+            // build new array
+            JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+            // add all elements from existing array except the one we wish to remove
+            permissionsJSONArray.forEach(p->{
+                JsonString s = (JsonString) p;
+                if (!s.getString().equals(permission.name())) {
+                    jsonArrayBuilder.add(p);
+                }
+            });
+
+            this.permissions = jsonArrayBuilder.build().toString();
+        }
+    }
+
     public void addPermission(UserPermission permission) {
 
         boolean userHasPermission = false;
 
-        // we do not wait to add the permission if it already exists in the list
+        // we do not want to add the permission if it already exists in the list
         for (String userPermission : getPermissions()) {
             if (userPermission.equals(permission.name())) {
                 userHasPermission = true;
