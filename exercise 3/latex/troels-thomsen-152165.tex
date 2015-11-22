@@ -104,8 +104,6 @@
 \section{Introduction}
 \label{sec:Introduction}
 
-\textit{The introduction should provide a general introduction to the problem of access control in client/server applications. It should define the scope of the answer, i.e. explicitly state what problems are considered, and outline the proposed solution. Finally, it should clearly state which of the identified goals are met by the developed software.}
-
 In any system that deals with end-users, access control is a feature which usually allows the system to either expand onto a wider user base, or allow a system to add or include more functionality. If we consider a  simple system with a small homogeneous group of users, where we desire to add new features which would benefit some users, but which might not be suited for all users. In this case we either need access control or an entirely new system. Opting for access control is in most cases the preferred solution, since having many related but different systems lowers the end-user usability and user experience. We must note however, that integrating large systems into one another can still lead to a wide variety of usability and user experience problems even if access control is correctly implemented.
 
 Building on the solution from the previous Data Security lab on authentication, our goal for this lab is to extend the functionality of the print server such that it supports different user access levels for specific actions on the server. Currently all registered users in the system are allowed to perform all actions on the server as defined in the print server interface. By providing granularity in what actions can be taken by which users we improve the systems overall usability, since it now can support a wider range of users.
@@ -116,8 +114,6 @@ Our access control implementation provides both the functionality of an access c
 
 \section{Access Control Lists}
 \label{sec:Access Control Lists}
-
-\textit{This section should provide a short overview of the implementation of the access control lists and the motivation behind all non-trivial design choices.}
 
 For access control list we assign a list of permissions to each user individually. We have implemented this with a new field in the user table in our sqlite database. The field is called "permissions" and contains a JSON string describing an array which contains the permissions associated with the given user. \\
 The individual permissions are defined as an enumeration which we can easily reference in the code, and whose string value is easily stored in the database while still ensuring uniqueness of each permission.
@@ -156,8 +152,6 @@ We chose to not use this approach, since storing the values in the same table wi
 
 \section{Role Based Access Control}
 \label{sec:Role Based Access Control}
-
-\textit{This section should document the results of the role mining process performed in in Task 2 and provide a short overview of the implementation of the role based access control mechanism implemented in Task 3 along with the motivation behind all non-trivial design choices. In particular, it must describe the syntax used to specify the RBAC policy.}
 
 Our implementation of role based access control does not have a role hierarchy in the sense that roles are not interdependently related to each other. This allows for a much simpler albeit less powerful role scheme.
 
@@ -275,20 +269,30 @@ We consider it fair to make this assumption that administrators of the system ha
 
 \textit{This section should document that the prototype enforces the access control policies defined in this assignment; both ACL and RBAC and both before and after the changes. The evaluation should provide a simple summary of which of the requirements are satisfied and which are not.}
 
+The included solution contains two unit tests PrintServiceTest.java and UserTest.java who together test the access control enforcement on the server for two test users. We are satisfied that if the system works for the access cases handled by the unit tests, that it will also work with other combinations and or new permission settings.
 
-
-\newpage
+The included solution does not contain both of the policy sets described in the exercise but only the initial configuration, and only the initial configuration for RBAC. Each User model instance has an empty permissions list.
 
 \section{Discussion}
 \label{sec:Discussion}
 
-\textit{This section documents the reflections and discussions of the final task.}
+\subsection{Access control list}
+\label{sub:Access control list}
+
+Under the access control list paradigm we would have to create each permission individually to first Bob, then Henry and then Ida. With some crafty SQL we could copy the contents of the fields of Bob, David and Cecilia respectively, but it would not be an easy task to perform.
+
+\subsection{Role Based Access Control}
+\label{sub:Role Based Access Control}
+
+Under the RBAC paradigm we would simply have to give Bob the same role as George, Henry the same role as David and Ida the same role as Cecilia. This change should be done in a few clicks and is much less error-prone.
 
 \newpage
 
 \section{Conclusion}
 \label{sec:Conclusion}
 
-\textit{The conclusions should summarize the problems addressed in the report and clearly identify which of the requirements are satisfied and which are not (a summary of Section 4). The conclusions may also include a brief outline of future work.}
+For adding new users to a system the RBAC approach is far superior as we saw in the example changes. It does lack the flexibility of the access control list approach which allows more granularity. A combination of both approaches would yield a more optimal approach granting both the flexibility of access control lists as well as the continuality of RBAC.
+
+Future work in the implementation could be to implement a dependency relationship between the roles in RBAC. If roles could inherit permissions from one another, it would provide much more flexibility as well as allowing for much more complicated access control schemes.  
 
 \end{document}
