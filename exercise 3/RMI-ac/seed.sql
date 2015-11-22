@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS `UserRoles` (
 CREATE TABLE IF NOT EXISTS `UserRolePermissions` (
   `id`           INTEGER PRIMARY KEY AUTOINCREMENT,
   `permission`   VARCHAR NOT NULL,
-  `fk_user_role` INTEGER NOT NULL
+  `fk_user_role` INTEGER NOT NULL,
+  UNIQUE (`permission`, `fk_user_role`)
 );
 
 CREATE TABLE IF NOT EXISTS `Users` (

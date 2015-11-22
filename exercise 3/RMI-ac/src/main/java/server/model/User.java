@@ -94,25 +94,35 @@ public class User implements Serializable {
     }
 
     public void addPermission(UserPermission permission) {
-        if (permissions == null) permissions = "[]";
 
-        JsonArray permissionsJSONArray = Json.createReader(new StringReader(permissions)).readArray();
+        boolean userHasPermission = false;
 
-        // build new array
-        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        jsonArrayBuilder.add(permission.name());
+        // we do not wait to add the permission if it already exists in the list
+        for (String userPermission : getPermissions()) {
+            if (userPermission.equals(permission.name())) {
+                userHasPermission = true;
+            }
+        }
 
-        // add all elements from existing array
-        permissionsJSONArray.forEach(jsonArrayBuilder::add);
+        if (!userHasPermission) {
+            JsonArray permissionsJSONArray = Json.createReader(new StringReader(permissions)).readArray();
 
-        this.permissions = jsonArrayBuilder.build().toString();
+            // build new array
+            JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+            jsonArrayBuilder.add(permission.name());
+
+            // add all elements from existing array
+            permissionsJSONArray.forEach(jsonArrayBuilder::add);
+
+            this.permissions = jsonArrayBuilder.build().toString();
+        }
     }
 
     /**
      * Checks if a User has the given permission.
      * This method takes both cases into consideration:
-     *      - First we check if the user has the given permission associated directly
-     *      - Second we check if the user's role has the given permission
+     * - First we check if the user has the given permission associated directly
+     * - Second we check if the user's role has the given permission
      *
      * @param permission
      * @return boolean

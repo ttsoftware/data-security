@@ -24,9 +24,11 @@
 \usepackage[english]{varioref}
 \usepackage{multirow}
 \usepackage{hhline}
+\usepackage{fancyhdr}
 \usepackage{etoolbox}
 
-\usepackage{fancyhdr}
+\AtBeginEnvironment{table}{\addvspace{7mm}}
+\AtEndEnvironment{table}{\addvspace{0mm}}
 
 \setlength\parindent{0pt}
 \usepackage[parfill]{parskip}
@@ -38,6 +40,9 @@
 \definecolor{mygray}{rgb}{0.9451,0.9451,0.9451}
 
 \lstset{
+  aboveskip=7mm,
+  belowskip=5mm,
+  captionpos=b,
   backgroundcolor=\color{mygray},
   basicstyle=\footnotesize\ttfamily,
   mathescape,
@@ -105,8 +110,7 @@ In any system that deals with end-users, access control is a feature which usual
 
 Building on the solution from the previous Data Security lab on authentication, our goal for this lab is to extend the functionality of the print server such that it supports different user access levels for specific actions on the server. Currently all registered users in the system are allowed to perform all actions on the server as defined in the print server interface. By providing granularity in what actions can be taken by which users we improve the systems overall usability, since it now can support a wider range of users.
 
-Our access control implementation provides both the functionality of an access control list and the functionality of role based access control at the same time. We have chosen to implement both at the same time, because we consider it the optimal solution while still providing a good example for discussing both approaches and comparing them against each other. The solution makes the assumption that all communication between client and server takes place on a secure network, and as such sends all passwords in clear text.
-
+Our access control implementation provides both the functionality of an access control list and the functionality of role based access control at the same time. We have chosen to implement both at the same time, because we consider it the optimal solution while still providing a good example for discussing both approaches and comparing them against each other. The solution makes the assumption that all communication between client and server takes place on a secure network, and as such sends all passwords in clear text. The solution also assumes that another system exists which allows administrators to access and make changes to the database according to their access control needs.
 
 \newpage
 
@@ -115,7 +119,24 @@ Our access control implementation provides both the functionality of an access c
 
 \textit{This section should provide a short overview of the implementation of the access control lists and the motivation behind all non-trivial design choices.}
 
-For access control list we assign a list of permissions to each user individually. We have implemented this with a new field in the user table in our sqlite database. The field is called "permissions" and contains a JSON string describing an array which contains the permissions associated with the given user.
+For access control list we assign a list of permissions to each user individually. We have implemented this with a new field in the user table in our sqlite database. The field is called "permissions" and contains a JSON string describing an array which contains the permissions associated with the given user. \\
+The individual permissions are defined as an enumeration which we can easily reference in the code, and whose string value is easily stored in the database while still ensuring uniqueness of each permission.
+
+\begin{lstlisting}[caption=UserPermission enumerating the possible permissions on the server.]
+public enum UserPermission implements Serializable {
+    CAN_START,
+    CAN_STOP,
+    CAN_RESTART,
+    CAN_PRINT,
+    CAN_READ_QUEUE,
+    CAN_EDIT_QUEUE,
+    CAN_READ_CONFIG,
+    CAN_WRITE_CONFIG,
+    CAN_READ_STATUS
+}
+\end{lstlisting}
+
+The string values of the enumeration as a JSON list is stored in the User table in the database as shown in Table~\ref{json-permissions}.
 
 \begin{table}[H]
 \centering
@@ -123,31 +144,129 @@ For access control list we assign a list of permissions to each user individuall
 \hline
 Id & Name & Password & Salt & Permissions \\
 \hline
-1 & troels & zs0+Of9p \ldots & MsPSanA8kTQ= & ["CAN\_STOP", "CAN\_RESTART" \ldots] \\
+1 & troels & zs0+Of9p \ldots & MsPSanA8kTQ= & ["CAN\_STOP","CAN\_RESTART", \ldots] \\
 \hline
 \end{tabular}
-
 \caption{Example user row containing a JSON list of permissions}
 \label{json-permissions}
 \end{table}
 
-\begin{itemize}
-    \item Alice is managing the print server, so she has the rights to perform all operations.
-    \item Bob is the janitor who doubles as service technician, he has the rights to start, stop and restart the print server as well as inspect and modify the service parameters, i.e., invoke the status, readConfig and setConfig operations.
-    \item Cecilia is a power user, who is allowed to print files and manage the print queue, i.e., use queue and topQueue as well as restart the print server when everything seems to be stuck.
-    \item David is an ordinary user who is only allowed to print files and display the print queue.
-    \item Erica is an ordinary user who is only allowed to print files and display the print queue.
-    \item Fred is an ordinary user who is only allowed to print files and display the print queue.
-    \item George is an ordinary user who is only allowed to print files and display the print queue.
-\end{itemize}
-
-
-\newpage
+The classic approach to storing user specific permissions would be to create a table separate from the User table, with one column for the foreign key to the referenced user, and one column for the permission enumeration. \\
+We chose to not use this approach, since storing the values in the same table will reduce database load by requiring fewer queries / less joins when getting the User specific permissions. The downside is that we have to de-serialize the JSON list in the code. Since we know that the list is always going to be rather small, this overhead is always going to be small and we consider the trade-off favorable since database / disk interaction is always going to be slower than de-serializing the JSON list.
 
 \section{Role Based Access Control}
 \label{sec:Role Based Access Control}
 
 \textit{This section should document the results of the role mining process performed in in Task 2 and provide a short overview of the implementation of the role based access control mechanism implemented in Task 3 along with the motivation behind all non-trivial design choices. In particular, it must describe the syntax used to specify the RBAC policy.}
+
+Our implementation of role based access control does not have a role hierarchy in the sense that roles are not interdependently related to each other. This allows for a much simpler albeit less powerful role scheme.
+
+The roles have been implemented as their own database entity called UserRole, which the User entity references by foreign key and as such the User has a single role. The UserRole has a one-to-many relationship with the UserPermissions defined above, meaning that another entity is created called UserRolePermissions which contains the intersection. The UserRolePermission table has a permission field and a user role field referencing the UserRole entity by foreign key. This allows the UserRole to have servaral permissions associated.
+
+This design allows the creation of new roles and the changing of existing roles, without having to change any User entities. If serveral users assigned to the same role needs a permission revoked, we can simply remove the UserRolePermission association and it will immediately affect all associated users.
+
+Based on the policy described in the assignment text, the server seeds the database with the following RBAC policy preset.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+Id & Name & Password & Salt & Permissions & UserRole \\
+\hline
+2 & Alice & /BM6AM/Hvoho\ldots & QtRAoSR8Mc4= & [] & 1 \\
+\hline
+3 & Bob & 3NlCrvzerJy8\ldots & b2M0D7gMNas= & [] & 2 \\
+\hline
+4 & Cecilia & zlwzlhznMu8l\ldots & Gq8100+aVe0= & [] & 3 \\
+\hline
+5 & David & ZFn7tb7AsHQEu\ldots & 9iZF+dSQ3K8= & [] & 4 \\
+\hline
+6 & Erica & vYX2zTod9oew\ldots & PpGBlwFeykc= & [] & 4 \\
+\hline
+7 & Fred & CKZFtv8ElZMsX\ldots & cH4bpAyP1oA= & [] & 4 \\
+\hline
+8 & George & 61NEDEOP3zzJ\ldots & kcl0cco3NWo= & [] & 4 \\
+\hline
+\end{tabular}
+\caption{Users table}
+\label{users-table}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Id & Name \\
+\hline
+1 & manager \\
+\hline
+2 & service\_technician \\
+\hline
+3 & power\_user \\
+\hline
+4 & regular\_user \\
+\hline
+\end{tabular}
+\caption{UserRoles table}
+\label{userroles-table}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+Id & Permission & UserRole \\
+\hline
+1 & CAN\_RESTART & 1 \\
+\hline
+2 & CAN\_START & 1 \\
+\hline
+3 & CAN\_STOP & 1 \\
+\hline
+4 & CAN\_PRINT & 1 \\
+\hline
+5 & CAN\_READ\_CONFIG & 1 \\
+\hline
+6 & CAN\_WRITE\_CONFIG & 1 \\
+\hline
+7 & CAN\_READ\_STATUS & 1 \\
+\hline
+8 & CAN\_READ\_QUEUE & 1 \\
+\hline
+9 & CAN\_EDIT\_QUEUE & 1 \\
+\hline
+10 & CAN\_RESTART & 2 \\
+\hline
+11 & CAN\_START & 2 \\
+\hline
+12 & CAN\_STOP & 2 \\
+\hline
+13 & CAN\_READ\_CONFIG & 2 \\
+\hline
+14 & CAN\_WRITE\_CONFIG & 2 \\
+\hline
+15 & CAN\_READ\_STATUS & 2 \\
+\hline
+16 & CAN\_RESTART & 3 \\
+\hline
+17 & CAN\_PRINT & 3 \\
+\hline
+18 & CAN\_READ\_QUEUE & 3 \\
+\hline
+19 & CAN\_EDIT\_QUEUE & 3 \\
+\hline
+20 & CAN\_PRINT & 4 \\
+\hline
+21 & CAN\_READ\_QUEUE & 4 \\
+\hline
+\end{tabular}
+\caption{UserRolesPermissions table}
+\label{userrolepermissions-table}
+\end{table}
+
+This preset is specifically loaded in using a SQL file called seed.sql containing the necessary CREATE and INSERT statements. The design of the system expects any changes to happen in the database. Any changes to seed.sql will be reflected in the databased as it is loaded on startup for demonstration purposes, but ideally this script should run once and all consecutive changes to the roles and permissions should happen at a database level.
+
+We consider it fair to make this assumption that administrators of the system have access to modifying the database, since a prerequisite to the previous lab exercise was the fact that the system did not actually handle the creating of users - this was presumed to happen elsewhere. In the same manner we presume that modifications to the RBAC policy happens elsewhere.
 
 \newpage
 
@@ -155,6 +274,8 @@ Id & Name & Password & Salt & Permissions \\
 \label{sec:Evaluation}
 
 \textit{This section should document that the prototype enforces the access control policies defined in this assignment; both ACL and RBAC and both before and after the changes. The evaluation should provide a simple summary of which of the requirements are satisfied and which are not.}
+
+
 
 \newpage
 
