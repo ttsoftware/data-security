@@ -1,0 +1,211 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, hmargin={2.5cm, 2.5cm}, vmargin={2.5cm, 2.5cm}]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes, shadows, arrows, automata}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage[english]{varioref}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{fancyhdr}
+\usepackage{etoolbox}
+
+\AtBeginEnvironment{table}{\addvspace{7mm}}
+\AtEndEnvironment{table}{\addvspace{0mm}}
+
+\setlength\parindent{0pt}
+\usepackage[parfill]{parskip}
+
+\definecolor{pblue}{rgb}{0.13,0.13,1}
+\definecolor{pgreen}{rgb}{0,0.5,0}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{pgrey}{rgb}{0.46,0.45,0.48}
+\definecolor{mygray}{rgb}{0.9451,0.9451,0.9451}
+
+\lstset{
+  aboveskip=7mm,
+  belowskip=5mm,
+  captionpos=b,
+  backgroundcolor=\color{mygray},
+  basicstyle=\footnotesize\ttfamily,
+  mathescape,
+  language=Java,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
+  breaklines=true,
+  numbers=left,
+  numberstyle=\ttfamily,
+  stepnumber=1,
+  firstnumber=1,
+  numberfirstline=true,
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+  literate={->}{$\rightarrow$}{2}
+           {ε}{$\varepsilon$}{1}
+}
+
+\linespread{1.3}
+
+\title{
+  \vspace{4cm}
+  \begin{flushleft}
+  \Large{\textbf{Security in Intelligent Buildings}} \\
+  \large{02239 - Data Security exam} \\
+  \end{flushleft}
+  \vspace{0cm}
+  \begin{flushleft}
+  \small
+  \textit{\today}
+  \end{flushleft}
+  \vspace{12cm}
+  \begin{flushleft}
+  \small
+  Troels Thomsen \texttt{152165}
+  \end{flushleft}
+}
+
+\date{
+	%
+}
+
+\begin{document}
+
+\clearpage
+\pagenumbering{gobble}
+\thispagestyle{empty}
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Problem definition}
+\label{sec:Problem definition}
+
+A number of technologies have been proposed for intelligent houses, which will allow heating, lighting, alarms and appliances to communicate with each other and provide a unified profile, e.g., lights are dimmed in the living room and off in the rest of the house when the family is watching TV together, at the same time the temperature is lowered a few degrees in all rooms outside the living room.
+
+Identify general security issues that arise in intelligent houses focusing particularly on the information and communication technologies required to build intelligent houses, e.g. communication technology (wired or wireless), sensor technology, authentication (key management), etc. The identification of security issue may focus on a particular technology, e.g. communication technologies proposed for intelligent buildings (ZWave, Zigbee, IO Home Control, etc.), it may focus on secure solutions to particular home automation problems, e.g. remote controlled locks on doors and windows, or it may focus on the integration of diverse technologies from different scenarios in a single building.
+
+\textit{Analyse the security issues identified above and identify threats and propose appropriate counter measures that can be implemented in the home environment. You may find inspiration in the scenarios defined below.}
+
+\newpage
+
+\section{Introduction}
+\label{sec:Introduction}
+
+The so-called intelligent home is the idea of a variety of technologies which automatically monitor or interact the living space, providing useful metrics about the living space, extending existing functionality of devices or appliances or giving the home owner more control over certain aspects of his or her home. Examples of this could be automatic thermostats, automatic vacuum robots, electronic internet-connected locks, internet-connected smoke alarms, internet-connected light-bulbs and in general most internet-of-things devices which might reside in private homes.
+
+This idea of an intelligent or smart home is not a new one and has in fact been developed at least since Ray Bradbury's dystopian science fiction short story from 1950 \textit{There Will Come Soft Rains} taking place in 2026 and featuring an almost artificially intelligent house whose automation continues to function even though the owners are gone and the surrounding city destroyed. \\
+Although this short story tells us that the idea of an intelligent home is at least 60 years old, the technology required to realise the idea has taking a long time to develop. Even today the vast majority of people living in developed industrialised countries, do not enjoy the luxury of home automation technologies even though these technologies are becoming widely available. To mention a few we now have products such as the Nest thermostat which automatically adjusts the temperature of the living space based on a machine learning algorithm~\cite{nest-labs}, the Philips Hue light bulbs which automatically adjusts the room brightness and hue~\cite{philips-hue}, the Roost smoke alarm battery which alerts your smartphone over the internet if your firealarm goes off, and optionally automatically calls the fire department~\cite{roost}. These are but a few of the possible intelligent devices which can be purchased today, together contributing to a more automated home in the likes imagined in science fiction. 
+
+While these devices improve the lives of their users, they also add new attack vectors to the network they are connected to. Most of these devices are connected to the internet, usually because they collect certain metrics to improve their algorithms or because they provide an interface for manual settings and adjustments. These remote interfaces usually come in the form of smartphone applications or websites and are usually focused on improving the device's usability but not necessarily on network security. 
+
+This paper will confine itself to look at the security problems which might arise from integrating several different smart devices from different companies into the same home and network. Thus we will not analyse a particular device in depth, but rather look at the security of the system as a whole when many different devices are integrated and given the possibility to interact with one-another. The paper wish to discover what avenues, if any, the creators of internet-connected home appliances can take, in order to allow their devices to be integrated into the intelligent home without compromising the security of entire system. In other words how can we prevent the weakest link from compromising the entire system.
+
+Depending on the type of devices installed in a home, the severity of these devices being compromised might have great variance. If an intelligent smoke alarm is attacked and falsely set off by an attacker, it will most likely not cause any harm to the user of the smoke alarm. Worst case scenario it might cause confusion and lead to the user buying a different smoke alarm. In this case the harm is most severe to the smoke alarm manufacturer, who might lose a customer after such an event. \\
+On the other hand if an internet-connected locking system were to be successfully attacked, it might cause the user to unwillingly allow the attacker entrance to their home and subsequently cause the loss of valuable property.
+
+Neither of these two security problems on their own are of particular interest to this paper. While the threats they represent certainly are relevant to the users of the given devices, the threats they pose on the whole system is what is of particular interest in our case. 
+
+We will consider a living space, which will be the referred to as our smart home, with the following internet-connected devices installed where each come from a different manufacturer: a smoke alarm, a thermostat, light-bulbs, security camera system and a door-locking system.
+
+\newpage
+
+\section{Security issues}
+\label{sec:Security issues}
+
+In order to identify the issues regarding our smart home, we must first understand what attackers might target our smart home, and understand why they have an interest in compromising the system. We must further identify their possible attack vectors in order to discuss how we can prevent or limit the chances of future attacks.
+
+\subsection{Attackers}
+\label{sub:Attackers}
+
+We consider the set of possible attackers to be a subset of the theoretical Dolev–Yao attacker.~\cite{dolev-yao}
+The possible attackers who might attack our smart home is given as follows.
+
+\begin{itemize}
+	\item \textit{Burglars} - Who might seek to gain physical entrance to our smart home in order to steal our smart home owners physical property.
+	\item \textit{Kidnappers} - Who might seek to break into the home and kidnap one or more persons and charge a ransom fee for their release.
+	\item \textit{Online criminals} - Who might have a several different reasons for wanting to break into our smart home.
+
+	\begin{itemize}
+		\item Blackmail - The online criminal might look for information which can be used for blackmail, or simply lock down devices in our smart home and blackmail against unlocking them. 
+		\item Theft - The online criminal might try to gain access to our smart home owners online bank accounts in order to steal directly from them.
+		\item Botnets - The online criminal might wish to use the computers on the network for other criminal activities such as integrating them with a bot-net and using them for denial of service attacks or for distributing other malicious software. 
+	\end{itemize}
+	
+	\item \textit{Terrorists} - Who might seek to gain access to- and control over several smart homes and their associated networks in order to carry out large scale disruptions of peoples lives and thus instil fear in the general population. In the case of public buildings with internet-connected locks there is also the threat of a violent terrorist attack.
+	\item \textit{Government agencies} - Foreign or domestic intelligence agencies who might wish to gain access to private documents residing on the network, or in general gain the ability to monitor the network traffic in our smart home in an attempt to gather large bulks of personal data on the general population.
+\end{itemize}
+
+\newpage
+
+\subsection{Attack vectors}
+\label{sub:Attack vectors}
+
+Given our smart home with its devices installed, each coming from a different manufacturer we might accidentally provide a wide variety of new previously unexplored attack vectors for our attackers to pursue. This is the main problem of our smart home. We want all the new devices to interact with each other while at the same time being connected to the internet and available everywhere. 
+
+On the surface most of this can be remedied by isolating each device from the rest of the network, thus preventing a compromised device from compromising personal computers or media consumption devices on the network. \\
+While this theoretically solves the problem, there is no way for the consumer to tell what design the manufactures used to implement this decoupling and the consumer will most likely not be able to make an informed decision either way, since the learning curve for understanding the design choices and their associated risks will be too steep. A small slip in the implementation might let an attacker monitor all wifi traffic in the vicinity of the device.
+
+Even if such measures were successfully implemented we must consider the fact that modern smart home devices have the ability to communicate with each other. While manufactures such as Nest have developed their own API for integration with Nest devices, most appliances especially lower end devices adopt broader industry standards. \\
+There are currently two mayor protocols manufactures can choose to use for their products. The Z-Wave protocol maintained by the Z-Wave alliance which require product certification and the semi-open standard ZigBee which while being free for non-commercial usage requires membership of the ZigBee Alliance group which maintains the standard for commercial usage. \\
+Both of these protocols are meant for inter-device communication on a local mesh-like network where each device relays communication to other nearby devices thus saving power and extending range.
+
+While having widespread protocols for controlling smart home devices is generally consider good practice when it comes to limiting the variety of attack vectors, these protocols are not without flaws which in turn leaves more devices exposed to a given threat since more devices have adopted the standard. Both in the case of Z-Wave and ZigBee researches have found vulnerabilities which in both cases allowed an attacker to exploit the key exchange process.~\cite{zigbee-defcon}\cite{zigbee-system-science}\cite{z-wave-sensepost} In the case of Z-Wave this meant that an attacker could from any entry point intercept the key exchange and subsequently unlock the front door. \\
+In the case of ZigBee the problem resided with the way vendors had implemented the protocol. Through sloppy implementations of the key exchange process vulnerabilities had appeared which allowed an attacker to mimic the home owner and control the connected devices. If any one device had a sloppy implementation of the key exchange, the whole system could be compromised.
+
+These known exploit in Z-Wave have reportedly been fixed and will no longer appear in new devices certified under Z-Wave. The problem with sloppy implementations of cryptographic protocols is well known and in fact common across different industries. Neither protocol is immune to this problem, and given the fast pace at which the smart home device market is moving at it is likely that such implementation problems will persist in the near future.
+
+\subsubsection{Remote-controlled devices}
+\label{subs:Remote-controlled devices}
+
+With the adaptation of standards like ZigBee and Z-Wave, the problem of remote-controlled devices still remains open. Even if a device follows the standard it might have its own remote interface or data gathering point exposes the device to the internet potentially allowing remote attacks. A sloppy implementation of a remote interface in combination with a unifying standard might give an attacker the opportunity to remotely take control over several homes.
+
+What the unifying standards might help with under this scenario however, is securing the home network itself. If the device has its own internet connection it will not easily be able to gain access to the general wifi network under a protocol like Z-Wave, since it uses its own frequency bands for inter-device communication. For most devices this is somewhat unlikely since adding a separate internet connection for the device will significantly add to its cost. Having the device connect to the home network is both simpler and cheaper and  must thus be assumed to be a more widely adopted strategy thus negating the benefit.
+
+\newpage
+
+\section{Threat analysis}
+\label{sec:Threat analysis}
+
+The severity of a successful exploit of a device in our smart home wary greatly depending on which attacker is performing the exploit. In our smart home we have not defined any specific protocol such as Z-Wave or ZigBee and we must assume that the devices in our smart home communicate over the local network, if they communicate at all. Given this assumption the attack most either be physically close to the home in order to be able to interact with the devices, or the attacker must be able to find a weakness in the device's online communication. 
+
+If the attackers goal is to gain entrance to the home, it is not unlikely that he or she would be willing to perform an attack in close proximity with the house since the attacker would have to get into the house anyway. As such we cannot assume that an attacker will deter from their course just because it means exposing themselves physically, and a low-proximity attack on the smart lock should therefore be considered as likely as an online attack. In the case of the Z-Wave key-exchange exploit the researches developed a software tool called Z-Force which would enable an attacker to unlock Z-Wave homes with a portable device like a smartphone or similar small device.~\cite{z-wave-sensepost} Having such tools eliminates the risk of performing a low-proximity attack almost completely, since the attacker with little effort can appear complete inconspicuous to anyone seeing the attack occur.
+
+Given the rapidly growing smart home market and our previous instances of sloppy cryptography implementations, as well as the potential material gain from attacking a smart home, we must consider the threat likelyhood of an attack on our smart home to be high. If a successful exploit is found, attacking a smart home is essentially risk-free compared to regular homes which should server as a motivational factor for burglars. The severity of the threat must also be consider high given the potential attackers we have described in Section~\ref{sub:Attackers}. 
+
+\newpage
+
+\section{Conclusion}
+\label{sec:Conclusion}
+
+We found that our smart home is only as strong as its weakest link. In order to secure our home from being compromised, we need to minimize the number of avenues on which the connected smart devices can communicate. We need standardised protocols which can be used universally between different kinds of devices, and at the same time isolate the internet-connected devices from the rest of the home network to prevent attacks from spilling over into the user's personal computers and smartphones. Even if these measures are taken by all smart home device manufactures, which seems somewhat unlikely, there is still a big risk of bad or lazy design choices on the manufactures part causing unforeseeable new exploits and thus at least for the foreseeable future the market for smart home devices must be surveyed carefully by the consumer in order to minimize risk exposure.
+
+\newpage
+
+\pagenumbering{gobble}
+\bibliographystyle{unsrt}
+\nocite{*}
+\bibliography{litterature}
+
+\end{document}

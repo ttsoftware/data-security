@@ -1,0 +1,51 @@
+\begin{thebibliography}{1}
+
+\bibitem{nest-labs}
+Nest Labs.
+\newblock {\textit{Nest Labs Introduces World’s First Learning Thermostat}}.
+\newblock
+  \url{https://nest.com/press/nest-labs-introduces-worlds-first-learning-thermostat},
+  2011.
+
+\bibitem{philips-hue}
+Philips.
+\newblock {\textit{Philips Hue white}}.
+\newblock
+  \url{http://www2.meethue.com/en-us/productdetail/philips-hue-white-extension-bulb-a19},
+  2015.
+
+\bibitem{roost}
+Roost.
+\newblock {\textit{No more 3AM chirps}}.
+\newblock \url{http://www.getroost.com}, 2015.
+
+\bibitem{dolev-yao}
+Daniele Micciancio.
+\newblock {\textit{The Dolev-Yao model}}.
+\newblock \url{https://cseweb.ucsd.edu/classes/sp05/cse208/lec-dolevyao.html},
+  2015.
+
+\bibitem{zigbee-defcon}
+Network World.
+\newblock {\textit{Researchers exploit ZigBee security flaws that compromise
+  security of smart homes}}.
+\newblock
+  \url{http://www.networkworld.com/article/2969402/microsoft-subnet/researchers-exploit-zigbee-security-flaws-that-compromise-security-of-smart-homes.html},
+  2015.
+
+\bibitem{zigbee-system-science}
+Niko Vidgren, Keijo Haataja, Jose~Luis Patino-Andres, Juan~Jose
+  Ramirez-Sanchis, and Pekka Toivanen.
+\newblock {\textit{Security Threats in ZigBee-Enabled Systems: Vulnerability
+  Evaluation, Practical Experiments, Countermeasures, and Lessons Learned}}.
+\newblock \url{http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=6480466},
+  2013.
+
+\bibitem{z-wave-sensepost}
+Behrange Fouladi and Sahand Ghanoun.
+\newblock {\textit{Security Evaluation of the Z-Wave Wireless Protocol}}.
+\newblock
+  \url{https://www.sensepost.com/cms/resources/conferences/2013/bh_zwave/Security%20Evaluation%20of%20Z-Wave_WP.pdf},
+  2013.
+
+\end{thebibliography}
